@@ -18,4 +18,7 @@ class AppIcons {
   static const tips_and_tricks = "${baseUrl}tips_and_tricks.svg";
   static const plant_related = "${baseUrl}plant_related.svg";
   static const new_features = "${baseUrl}new_features.svg";
+  static const home_logo = "${baseUrl}home_logo.svg";
+  static const pro_icon_white = "${baseUrl}pro_icon_white.svg";
+  static const setting = "${baseUrl}setting.svg";
 }
