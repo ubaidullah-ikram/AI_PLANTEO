@@ -6,6 +6,7 @@ import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/splash_view/splash_sc.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     DevicePreview(
       enabled: false,

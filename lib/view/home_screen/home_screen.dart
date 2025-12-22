@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
+import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
+import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:svg_flutter/svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -84,54 +88,59 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               SizedBox(height: 10),
               // Image.asset(AppImages.home_first_tool),
-              Container(
-                height: 155,
-                width: double.infinity,
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => PlanteoExpertScreen());
+                },
+                child: Container(
+                  height: 155,
+                  width: double.infinity,
 
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                    // color: Colors.green,
+                    image: DecorationImage(
+                      alignment: Alignment(0, -0.7),
+                      image: AssetImage(AppImages.home_first_tool),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  // color: Colors.green,
-                  image: DecorationImage(
-                    alignment: Alignment(0, -0.7),
-                    image: AssetImage(AppImages.home_first_tool),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 160),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 38),
-                      Row(
-                        children: [
-                          Text(
-                            'Planteo Expert',
-                            style: TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xff216E49),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Chat with Planteo’s expert AI and get instant solutions for all your plant and farming questions.',
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20.0, right: 130),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 28),
+                        Row(
+                          children: [
+                            Text(
+                              'Planteo Expert',
                               style: TextStyle(
-                                fontSize: 12,
-                                // fontWeight: FontWeight.w700,
-                                color: Color(0xff797979),
+                                fontSize: 23,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff216E49),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Chat with Planteo’s expert AI and get instant solutions for all your plant and farming questions.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  // fontWeight: FontWeight.w700,
+                                  color: Color(0xff797979),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -200,6 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: GestureDetector(
                         onTap: () {
                           // Card click action
+                          if (index == 0) {
+                            Get.to(() => ReminderView());
+                          }
                           print('${card['title']} clicked');
                         },
                         child: Container(
@@ -257,6 +269,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
+
+              SizedBox(height: 10),
             ],
           ),
         ),
@@ -273,41 +287,52 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     return Stack(
       children: [
-        SizedBox(
-          height: 105,
-          child: Center(
-            child: Container(
-              height: 90,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(left: 20, right: 110),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      toolNAme,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff054023),
+        GestureDetector(
+          onTap: () {
+            if (index == 0) {
+              // Get.to(() => PlanteoExpertScreen());
+            } else if (index == 1) {
+              Get.to(() => DiagnosePlantScreen());
+            } else if (index == 2) {
+              // Get.to(() => PlanteoExpertScreen());
+            }
+          },
+          child: SizedBox(
+            height: 105,
+            child: Center(
+              child: Container(
+                height: 90,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20, right: 110),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        toolNAme,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xff054023),
+                        ),
                       ),
-                    ),
-                    Text(
-                      toolDesc,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0,
+                      Text(
+                        toolDesc,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0,
 
-                        color: Color(0xff797979),
+                          color: Color(0xff797979),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

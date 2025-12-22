@@ -21,4 +21,8 @@ class AppIcons {
   static const home_logo = "${baseUrl}home_logo.svg";
   static const pro_icon_white = "${baseUrl}pro_icon_white.svg";
   static const setting = "${baseUrl}setting.svg";
+  static const camera_icon = "${baseUrl}camera_icon.svg";
+  static const galery = "${baseUrl}gallery.svg";
+  static const refresh = "${baseUrl}refresh.svg";
+  static const send_icon = "${baseUrl}send_icon.svg";
 }

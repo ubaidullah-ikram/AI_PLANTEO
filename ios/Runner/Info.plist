@@ -26,6 +26,9 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+
+	<key>NSCameraUsageDescription</key>
+<string>We need camera access to diagnose your plant</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
