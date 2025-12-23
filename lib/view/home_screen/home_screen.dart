@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           // Card click action
                           if (index == 0) {
-                            Get.to(() => ReminderView());
+                            Get.to(() => ReminderScreen());
                           }
                           print('${card['title']} clicked');
                         },
