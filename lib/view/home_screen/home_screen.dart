@@ -5,6 +5,7 @@ import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:svg_flutter/svg.dart';
@@ -211,6 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Card click action
                           if (index == 0) {
                             Get.to(() => ReminderScreen());
+                          } else if (index == 2) {
+                            Get.to(() => MyGardenScreen());
                           }
                           print('${card['title']} clicked');
                         },

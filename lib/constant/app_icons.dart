@@ -25,4 +25,7 @@ class AppIcons {
   static const galery = "${baseUrl}gallery.svg";
   static const refresh = "${baseUrl}refresh.svg";
   static const send_icon = "${baseUrl}send_icon.svg";
+  static const watering = "${baseUrl}watering.svg";
+  static const misting = "${baseUrl}misting.svg";
+  static const rotating = "${baseUrl}contrast.svg";
 }
