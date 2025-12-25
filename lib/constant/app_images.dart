@@ -11,5 +11,6 @@ class AppImages {
   static const mushroom = "${baseUrl}mushroom.png";
   static const reminder_icon = "${baseUrl}reminder_icon.png";
   static const my_garden_icon = "${baseUrl}my_garden_icon.png";
+  static const garden_image = "${baseUrl}garden_image.png";
   static const light_meter_icon = "${baseUrl}light_meter_icon.png";
 }

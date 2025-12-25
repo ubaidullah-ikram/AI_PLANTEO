@@ -4,6 +4,7 @@ import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/home_screen/home_screen.dart';
+import 'package:plantify/view/instruction_screen/onb_instruction_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -56,11 +57,11 @@ class _SplashScreenState extends State<SplashScreen> {
               Spacer(),
               GestureDetector(
                 onTap: () {
-                  Get.to(() => HomeScreen());
-                  // Get.to(() => InstructionScreens());
+                  // Get.to(() => HomeScreen());
+                  Get.to(() => InstructionScreens());
                 },
                 child: Container(
-                  height: SizeConfig.h(56),
+                  height: SizeConfig.h(54),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.themeColor,

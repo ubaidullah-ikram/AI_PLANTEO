@@ -28,4 +28,5 @@ class AppIcons {
   static const watering = "${baseUrl}watering.svg";
   static const misting = "${baseUrl}misting.svg";
   static const rotating = "${baseUrl}contrast.svg";
+  static const clock = "${baseUrl}clock.svg";
 }
