@@ -29,4 +29,11 @@ class AppIcons {
   static const misting = "${baseUrl}misting.svg";
   static const rotating = "${baseUrl}contrast.svg";
   static const clock = "${baseUrl}clock.svg";
+  static const delete_icon = "${baseUrl}delete_icon.svg";
+  static const alarm_icon = "${baseUrl}alarm_icon.svg";
+  static const edit_icon = "${baseUrl}edit_icon.svg";
+  static const privacy = "${baseUrl}privacy.svg";
+  static const rate = "${baseUrl}rate.svg";
+  static const terms = "${baseUrl}terms.svg";
+  static const share = "${baseUrl}share.svg";
 }

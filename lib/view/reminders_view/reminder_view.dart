@@ -10,7 +10,8 @@ import 'package:plantify/view/reminders_view/widgets/repeat_reminder_widget.dart
 import 'package:plantify/view/reminders_view/widgets/time_selection.dart';
 
 class ReminderScreen extends StatefulWidget {
-  const ReminderScreen({Key? key}) : super(key: key);
+  bool isfromEdit;
+  ReminderScreen({Key? key, required this.isfromEdit}) : super(key: key);
 
   @override
   State<ReminderScreen> createState() => _ReminderScreenState();
@@ -38,7 +39,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
         //   onPressed: () {},
         // ),
         title: Text(
-          'Set Reminder',
+          widget.isfromEdit ? 'Edit Reminder' : 'Set Reminder',
           style: TextStyle(
             color: Colors.green,
             fontWeight: FontWeight.w600,
@@ -132,42 +133,27 @@ class _ReminderScreenState extends State<ReminderScreen> {
                   const SizedBox(height: 16),
 
                   // Turn on Reminder Button
-                  SizedBox(
+                  Container(
+                    height: 55,
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // setState(() {
-                        //   reminderEnabled = !reminderEnabled;
-                        // });
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   SnackBar(
-                        //     content: Text(
-                        //       reminderEnabled
-                        //           ? 'Reminder activated!'
-                        //           : 'Reminder disabled!',
-                        //     ),
-                        //     backgroundColor: reminderEnabled
-                        //         ? Colors.green
-                        //         : Colors.grey,
-                        //   ),
-                        // );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        // backgroundColor: reminderEnabled
-                        //     ? Colors.green
-                        //     : Colors.grey[300],
-                        backgroundColor: AppColors.themeColor,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                    decoration: BoxDecoration(
+                      border: widget.isfromEdit
+                          ? Border.all(color: AppColors.themeColor)
+                          : null,
+                      borderRadius: BorderRadius.circular(16),
+                      color: widget.isfromEdit
+                          ? Colors.transparent
+                          : AppColors.themeColor,
+                    ),
+                    child: Center(
                       child: Text(
-                        'Turn on Reminder',
+                        widget.isfromEdit
+                            ? "Turn Off Reminder"
+                            : 'Turn on Reminder',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: widget.isfromEdit ? Colors.red : Colors.white,
                           // color: reminderEnabled ? Colors.white : Colors.grey[600],
                         ),
                       ),
