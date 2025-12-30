@@ -36,4 +36,7 @@ class AppIcons {
   static const rate = "${baseUrl}rate.svg";
   static const terms = "${baseUrl}terms.svg";
   static const share = "${baseUrl}share.svg";
+  static const common_problem = "${baseUrl}common_problem.svg";
+  static const care_tips = "${baseUrl}care_tips.svg";
+  static const treatment = "${baseUrl}treatment.svg";
 }

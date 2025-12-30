@@ -22,6 +22,9 @@ class DiagnoseCameraController extends GetxController {
   Future<void> initializeCamera() async {
     try {
       log('Starting camera initialization...');
+      if (controller != null && controller!.value.isInitialized) {
+        await controller!.dispose();
+      }
 
       cameras = await availableCameras();
       log('Available cameras: ${cameras?.length}');

@@ -6,6 +6,7 @@ import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/analyzing_sc/analyzing_screen.dart';
+import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
 import 'package:plantify/view_model/onb_instruction_controller/onb_instruction_controller.dart';
 import 'package:svg_flutter/svg.dart';
@@ -71,6 +72,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
       });
     } else {
       log('its done now request');
+      Get.to(() => DiagnoseResultScreen());
       // Last screen par "Done" button press hone par
       // Navigator.of(context).pop();
     }
@@ -231,7 +233,8 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                         _currentIndex == 2
                             ? Column(
                                 children: [
-                                  SizedBox(height: Get.height * 0.38),
+                                  Image.asset(AppImages.diagnose_image_bg),
+                                  SizedBox(height: Get.height * 0.12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -296,7 +299,8 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                         _currentIndex == 3
                             ? Column(
                                 children: [
-                                  SizedBox(height: Get.height * 0.38),
+                                  Image.asset(AppImages.diagnose_image_bg),
+                                  SizedBox(height: Get.height * 0.12),
                                   Container(
                                     width: 90,
                                     height: 40,

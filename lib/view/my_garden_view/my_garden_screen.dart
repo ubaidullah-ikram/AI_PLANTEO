@@ -171,7 +171,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                         onTap: () {},
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 6),
-                          height: SizeConfig.h(54),
+                          height: 54,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: AppColors.themeColor,
@@ -300,7 +300,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
         ),
         Positioned(
           right: 0,
-          top: SizeConfig.h(0),
+          // top: SizeConfig.h(0),
           child: IconButton(
             onPressed: () {
               showModalBottomSheet(
@@ -367,7 +367,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
           GestureDetector(
             onTap: () {},
             child: Container(
-              height: SizeConfig.h(54),
+              height: 54,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: AppColors.themeColor,

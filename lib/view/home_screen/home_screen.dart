@@ -5,6 +5,7 @@ import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view/light_meter/light_meter_sc.dart';
 import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
@@ -165,6 +166,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.to(() => DiagnoseResultScreen());
+                },
+                child: Text('data'),
               ),
               SizedBox(height: 10),
               supportToolCard(

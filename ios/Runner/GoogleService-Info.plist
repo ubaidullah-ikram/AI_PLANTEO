@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDdzTjRx5ZBEHu5w71tLN2NDSfPAXdYmfw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>980203504046</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.planteo.ai.plant.identifier.scanner.disease.diagnose.garden.care.reminder</string>
+	<key>PROJECT_ID</key>
+	<string>planteo---plant-identifier</string>
+	<key>STORAGE_BUCKET</key>
+	<string>planteo---plant-identifier.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:980203504046:ios:32691a8f03c04555ab883f</string>
+</dict>
+</plist>

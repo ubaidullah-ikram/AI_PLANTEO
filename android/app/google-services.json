@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "980203504046",
+    "project_id": "planteo---plant-identifier",
+    "storage_bucket": "planteo---plant-identifier.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980203504046:android:22bf4a8ab92a94caab883f",
+        "android_client_info": {
+          "package_name": "com.planteo.ai.plant.identifier.scanner.disease.diagnose.garden.care.reminder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQtdlKGaHbRstqrJYJOQcS2PeQqxk0Ppk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

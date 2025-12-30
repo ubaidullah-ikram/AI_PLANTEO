@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   Get.to(() => InstructionScreens());
                 },
                 child: Container(
-                  height: SizeConfig.h(54),
+                  height: 54,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.themeColor,
