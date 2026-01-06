@@ -4,6 +4,7 @@ import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
+import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view/light_meter/light_meter_sc.dart';
@@ -11,6 +12,7 @@ import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:plantify/view/setting_sc/setting_screen.dart';
+import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final cameraCtrl = Get.put(DiagnoseCameraController());
   final List<Map<String, dynamic>> cards = [
     {
       'title': 'Reminder',
@@ -96,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               SizedBox(height: 10),
+
               // Image.asset(AppImages.home_first_tool),
               GestureDetector(
                 onTap: () {
@@ -153,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 15),
               Row(
                 children: [
                   Text(
@@ -167,12 +171,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () {
-                  Get.to(() => DiagnoseResultScreen());
-                },
-                child: Text('data'),
-              ),
+              // TextButton(
+              //   onPressed: () {
+              //     Get.to(() => DiagnoseResultScreen());
+              //   },
+              //   child: Text('data'),
+              // ),
               SizedBox(height: 10),
               supportToolCard(
                 "Identify Plants",
@@ -310,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
             if (index == 0) {
               // Get.to(() => PlanteoExpertScreen());
             } else if (index == 1) {
-              Get.to(() => DiagnosePlantScreen());
+              Get.to(() => DiagnosePlantScreen(isfromHome: true));
             } else if (index == 2) {
               // Get.to(() => PlanteoExpertScreen());
             }

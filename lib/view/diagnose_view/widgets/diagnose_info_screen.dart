@@ -6,9 +6,9 @@ import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/analyzing_sc/analyzing_screen.dart';
+import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
-import 'package:plantify/view_model/onb_instruction_controller/onb_instruction_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class DiagnoseInfoScreen extends StatefulWidget {
@@ -72,7 +72,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
       });
     } else {
       log('its done now request');
-      Get.to(() => DiagnoseResultScreen());
+      Get.off(() => DiagnosePlantScreen(isfromHome: false));
       // Last screen par "Done" button press hone par
       // Navigator.of(context).pop();
     }
@@ -153,269 +153,14 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                       children: [
                         const SizedBox(height: 20),
                         _currentIndex == 2
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // SizedBox(height: SizeConfig.h(70)),
-                                  Text(
-                                    'Humidity Level',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.themeColor,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Text(
-                                diagnoseController.screens[_currentIndex].title,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.themeColor,
-                                ),
-                              ),
+                            ? _diagnoseOptionFrame2()
+                            : _currentIndex == 3
+                            ? _diagnoseOptionFrame3(tabcontroller)
+                            : _diagnoseOptionFrame1(),
 
                         const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                          child: SizedBox(
-                            height: 50,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: EdgeInsets.symmetric(
-                                vertical: 0,
-                                horizontal: 0,
-                              ),
-                              itemCount:
-                                  diagnoseController.capturedImages.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: EdgeInsets.only(right: 6),
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                        // color: Colors.amberAccent,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                BorderRadiusGeometry.circular(
-                                                  6,
-                                                ),
-                                            child: Image.memory(
-                                              height: 50,
-                                              width: double.infinity,
-                                              diagnoseController
-                                                  .capturedImages[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: 16),
-                        _currentIndex == 2
-                            ? Column(
-                                children: [
-                                  Image.asset(AppImages.diagnose_image_bg),
-                                  SizedBox(height: Get.height * 0.12),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      _buildRiskButton('Low'),
-                                      const SizedBox(width: 12),
-                                      _buildRiskButton('Medium'),
-                                      const SizedBox(width: 12),
-                                      _buildRiskButton('High'),
-                                    ],
-                                  ), // Slider
-                                  SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: SliderTheme(
-                                          data: SliderThemeData(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 0,
-                                            ),
-                                            activeTrackColor: const Color(
-                                              0xFF1A9B8E,
-                                            ),
-                                            inactiveTrackColor: const Color(
-                                              0xFFD9D9D9,
-                                            ),
-                                            thumbColor: Colors.white,
-
-                                            thumbShape:
-                                                const RoundSliderThumbShape(
-                                                  enabledThumbRadius: 12,
-                                                ),
-                                            trackHeight: 6,
-                                          ),
-                                          child: Slider(
-                                            value: sliderValue,
-                                            min: 0,
-                                            max: 100,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                sliderValue = value;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        '${sliderValue.toInt()}%',
-                                        style: TextStyle(
-                                          color: AppColors.textHeading,
-                                          fontSize: 18,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            : SizedBox.fromSize(),
-
-                        // Options List
-                        _currentIndex == 3
-                            ? Column(
-                                children: [
-                                  Image.asset(AppImages.diagnose_image_bg),
-                                  SizedBox(height: Get.height * 0.12),
-                                  Container(
-                                    width: 90,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(9),
-                                      color: Color(0xffF3F3F3),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: TabBar(
-                                        labelStyle: TextStyle(
-                                          color: AppColors.textHeading,
-                                        ),
-                                        indicatorSize: TabBarIndicatorSize.tab,
-                                        indicator: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            9,
-                                          ),
-                                        ),
-                                        indicatorColor: Colors.white,
-                                        dividerColor: Colors.transparent,
-                                        controller: tabcontroller,
-                                        tabs: [
-                                          Tab(text: 'C'),
-                                          Tab(text: 'F'),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  // Row(
-                                  //   mainAxisAlignment: MainAxisAlignment.center,
-                                  //   children: [
-
-                                  //   ],
-                                  // ), // Slider
-                                  SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: SliderTheme(
-                                          data: SliderThemeData(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 0,
-                                            ),
-                                            activeTrackColor: const Color(
-                                              0xFF1A9B8E,
-                                            ),
-                                            inactiveTrackColor: const Color(
-                                              0xFFD9D9D9,
-                                            ),
-                                            thumbColor: Colors.white,
-
-                                            thumbShape:
-                                                const RoundSliderThumbShape(
-                                                  enabledThumbRadius: 12,
-                                                ),
-                                            trackHeight: 6,
-                                          ),
-                                          child: Slider(
-                                            value: tempSlider,
-                                            min: 0,
-                                            max: 100,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                tempSlider = value;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        '${tempSlider.toInt()}%',
-                                        style: TextStyle(
-                                          color: AppColors.textHeading,
-                                          fontSize: 18,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            : SizedBox.shrink(),
-                        if (diagnoseController
-                            .screens[_currentIndex]
-                            .options
-                            .isNotEmpty)
-                          _currentIndex == 2
-                              ? Column(children: [])
-                              : Column(
-                                  children: List.generate(
-                                    diagnoseController
-                                        .screens[_currentIndex]
-                                        .options
-                                        .length,
-                                    (index) => Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 12,
-                                      ),
-                                      child: OptionButton(
-                                        text: diagnoseController
-                                            .screens[_currentIndex]
-                                            .options[index],
-                                        isSelected:
-                                            _selectedOptions[_currentIndex]!
-                                                .contains(index),
-                                        onTap: () {
-                                          _toggleOption(index);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                        // : SizedBox.fromSize(),
                       ],
                     ),
                   ),
@@ -510,7 +255,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
               color: isSelected
                   ? const Color(0xFF1A9B8E)
                   : const Color(0xFFAAAAAA),
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -520,47 +265,342 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
   }
 
   String selectedUnit = 'C';
-  Widget _buildUnitButton(String unit) {
-    final isSelected = selectedUnit == unit;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedUnit = unit;
-        });
-      },
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE8F4F8) : const Color(0xFFF5F5F5),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF1A9B8E)
-                : const Color(0xFFDDDDDD),
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            unit,
-            style: TextStyle(
-              color: isSelected
-                  ? const Color(0xFF1A9B8E)
-                  : const Color(0xFFAAAAAA),
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   String selectedRisk = 'High';
   double sliderValue = 80;
   double tempSlider = 60;
+  Widget _diagnoseOptionFrame1() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // SizedBox(height: SizeConfig.h(70)),
+        Text(
+          diagnoseController.screens[_currentIndex].title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.themeColor,
+          ),
+        ),
+        SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: SizedBox(
+            height: 50,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              itemCount: diagnoseController.capturedImages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 6),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                        // color: Colors.amberAccent,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(6),
+                            child: Image.memory(
+                              height: 50,
+                              width: double.infinity,
+                              diagnoseController.capturedImages[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        SizedBox(height: 10),
+        Column(
+          children: List.generate(
+            diagnoseController.screens[_currentIndex].options.length,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: OptionButton(
+                text: diagnoseController.screens[_currentIndex].options[index],
+                isSelected: _selectedOptions[_currentIndex]!.contains(index),
+                onTap: () {
+                  _toggleOption(index);
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _diagnoseOptionFrame2() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // SizedBox(height: SizeConfig.h(70)),
+        Text(
+          'Humidity Level',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.themeColor,
+          ),
+        ),
+        SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: SizedBox(
+            height: 50,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              itemCount: diagnoseController.capturedImages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 6),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                        // color: Colors.amberAccent,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(6),
+                            child: Image.memory(
+                              height: 50,
+                              width: double.infinity,
+                              diagnoseController.capturedImages[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        SizedBox(height: 10),
+        Column(
+          children: [
+            Image.asset(AppImages.diagnose_image_bg),
+
+            SizedBox(height: 30),
+            // SizedBox(height: Get.height * 0.12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildRiskButton('Low'),
+                  const SizedBox(width: 6),
+                  _buildRiskButton('Medium'),
+                  const SizedBox(width: 6),
+                  _buildRiskButton('High'),
+                ],
+              ),
+            ), // Slider
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      activeTrackColor: const Color(0xFF1A9B8E),
+                      inactiveTrackColor: const Color(0xFFD9D9D9),
+                      thumbColor: Colors.white,
+
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 12,
+                      ),
+                      trackHeight: 6,
+                    ),
+                    child: Slider(
+                      value: sliderValue,
+                      min: 0,
+                      max: 100,
+                      onChanged: (value) {
+                        setState(() {
+                          sliderValue = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  '${sliderValue.toInt()}%',
+                  style: TextStyle(
+                    color: AppColors.textHeading,
+                    fontSize: 18,
+                    // fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _diagnoseOptionFrame3(TabController? tabcontroller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // SizedBox(height: SizeConfig.h(70)),
+        Text(
+          'Temperature',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.themeColor,
+          ),
+        ),
+        SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: SizedBox(
+            height: 50,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              itemCount: diagnoseController.capturedImages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 6),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                        // color: Colors.amberAccent,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(6),
+                            child: Image.memory(
+                              height: 50,
+                              width: double.infinity,
+                              diagnoseController.capturedImages[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        SizedBox(height: 10),
+        Column(
+          children: [
+            Image.asset(AppImages.diagnose_image_bg),
+
+            SizedBox(height: 30),
+            Container(
+              width: 90,
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9),
+                color: Color(0xffF3F3F3),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: TabBar(
+                  labelStyle: TextStyle(color: AppColors.textHeading),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  indicatorColor: Colors.white,
+                  dividerColor: Colors.transparent,
+                  controller: tabcontroller,
+                  tabs: [
+                    Tab(text: 'C'),
+                    Tab(text: 'F'),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      activeTrackColor: const Color(0xFF1A9B8E),
+                      inactiveTrackColor: const Color(0xFFD9D9D9),
+                      thumbColor: Colors.white,
+
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 12,
+                      ),
+                      trackHeight: 6,
+                    ),
+                    child: Slider(
+                      value: tempSlider,
+                      min: 0,
+                      max: 100,
+                      onChanged: (value) {
+                        setState(() {
+                          tempSlider = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  '${tempSlider.toInt()}%',
+                  style: TextStyle(
+                    color: AppColors.textHeading,
+                    fontSize: 18,
+                    // fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class OptionButton extends StatelessWidget {

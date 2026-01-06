@@ -101,29 +101,31 @@ class _ScanningAnimationState extends State<ScanningAnimation>
           builder: (context, child) {
             // 0 to 1 -> -100 to 100 (top to bottom)
             // 1 to 0 -> 100 to -100 (bottom to top) - reverse animation
-            double offset = (_controller.value * 220) - 140;
+            double offset = (_controller.value * 220) - 100;
 
             return Transform.translate(
               offset: Offset(0, offset),
               child: Container(
                 width: Get.width * 0.8,
-                height: 2,
+                height: 1,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.greenAccent.withOpacity(0),
-                      Colors.greenAccent.withOpacity(0.8),
-                      Colors.greenAccent.withOpacity(0),
-                    ],
-                  ),
+                  color: Color(0xff3AB57C),
+                  // gradient: LinearGradient(
+                  //   begin: Alignment.topCenter,
+                  //   end: Alignment.bottomCenter,
+                  //   colors: [
+                  //     Color(0xff3AB57C).withOpacity(0),
+                  //     Color(0xff2A8259).withOpacity(.7),
+                  //     Color(0xff3AB57C).withOpacity(0),
+                  //   ],
+                  // ),
                   borderRadius: BorderRadius.circular(2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.greenAccent.withOpacity(0.6),
+                      offset: Offset(0, 2),
+                      color: Color(0xff3AB57C),
                       blurRadius: 15,
-                      spreadRadius: 3,
+                      spreadRadius: 4,
                     ),
                   ],
                 ),
@@ -133,29 +135,29 @@ class _ScanningAnimationState extends State<ScanningAnimation>
         ),
 
         // Glow effect behind scanning line
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            double offset = (_controller.value * 400) - 200;
+        // AnimatedBuilder(
+        //   animation: _controller,
+        //   builder: (context, child) {
+        //     double offset = (_controller.value * 400) - 200;
 
-            return Transform.translate(
-              offset: Offset(0, 0),
-              child: Container(
-                // width: 250,
-                // height: 80,
-                // decoration: BoxDecoration(
-                //   gradient: RadialGradient(
-                //     colors: [
-                //       Colors.greenAccent.withOpacity(0.3),
-                //       Colors.greenAccent.withOpacity(0.1),
-                //       Colors.greenAccent.withOpacity(0),
-                //     ],
-                //   ),
-                // ),
-              ),
-            );
-          },
-        ),
+        //     return Transform.translate(
+        //       offset: Offset(0, 0),
+        //       child: Container(
+        //         // width: 250,
+        //         // height: 80,
+        //         // decoration: BoxDecoration(
+        //         //   gradient: RadialGradient(
+        //         //     colors: [
+        //         //       Colors.greenAccent.withOpacity(0.3),
+        //         //       Colors.greenAccent.withOpacity(0.1),
+        //         //       Colors.greenAccent.withOpacity(0),
+        //         //     ],
+        //         //   ),
+        //         // ),
+        //       ),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
