@@ -50,7 +50,7 @@ class DiagnosisData {
 
 // ============ Main Controller ============
 
-class PlantDiagnosisController extends GetxController {
+class ApiToolController extends GetxController {
   // RxVariables
   final isLoading = false.obs;
   final diagnosisData = Rxn<DiagnosisData>();

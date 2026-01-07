@@ -576,6 +576,7 @@ import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_info_screen.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view/diagnose_view/widgets/overlay_animation.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'dart:io';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
 import 'package:svg_flutter/svg.dart';
@@ -595,7 +596,7 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
   late AnimationController _step1Controller;
   late AnimationController _step2Controller;
   late AnimationController _step3Controller;
-
+  ApiToolController _apiToolController = Get.put(ApiToolController());
   @override
   void initState() {
     super.initState();

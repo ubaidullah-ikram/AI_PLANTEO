@@ -4,12 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
-import 'package:plantify/res/responsive_config/responsive_config.dart';
-import 'package:plantify/view/analyzing_sc/analyzing_screen.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
-import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
-import 'package:svg_flutter/svg.dart';
 
 class DiagnoseInfoScreen extends StatefulWidget {
   const DiagnoseInfoScreen({Key? key}) : super(key: key);
@@ -24,6 +20,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
   late Animation<double> _fadeAnimation;
   var diagnoseController = Get.put(DiagnoseCameraController());
   int _currentIndex = 0;
+  int option_selected_index = 0;
 
   // Har screen ke liye selected options store karne ke liye
   Map<int, Set<int>> _selectedOptions = {};
@@ -327,19 +324,35 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
 
         SizedBox(height: 10),
         Column(
-          children: List.generate(
-            diagnoseController.screens[_currentIndex].options.length,
-            (index) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: OptionButton(
-                text: diagnoseController.screens[_currentIndex].options[index],
-                isSelected: _selectedOptions[_currentIndex]!.contains(index),
-                onTap: () {
-                  _toggleOption(index);
-                },
-              ),
+          children: [
+            ListView.builder(
+              itemCount:
+                  diagnoseController.screens[_currentIndex].options.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: OptionButton(
+                    text: diagnoseController
+                        .screens[_currentIndex]
+                        .options[index],
+                    isSelected: option_selected_index == index,
+                    // isSelected: _selectedOptions[_currentIndex]!.contains(index),
+                    onTap: () {
+                      option_selected_index = index;
+                      setState(() {});
+                      log(
+                        "the selection from first frame is ${diagnoseController.screens[_currentIndex].options[index]}",
+                      );
+                      ;
+                      // _toggleOption(index);
+                    },
+                  ),
+                );
+              },
             ),
-          ),
+          ],
         ),
       ],
     );

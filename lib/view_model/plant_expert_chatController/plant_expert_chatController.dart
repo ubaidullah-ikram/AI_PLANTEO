@@ -188,7 +188,6 @@ class PlantExpertChatController extends GetxController {
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
 
   // 🔧 Constants
-  // static String apiKey = 'AIzaSyACtmKBoA3tdIhGeVpSbPpruXOyCbC-GUE'; // new
   static String apiKey = RemoteConfigService().api_key_gemini;
   static const String baseUrl =
       'https://generativelanguage.googleapis.com/v1/models';

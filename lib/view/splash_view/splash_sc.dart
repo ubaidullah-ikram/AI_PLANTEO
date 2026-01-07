@@ -5,6 +5,7 @@ import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/home_screen/home_screen.dart';
 import 'package:plantify/view/instruction_screen/onb_instruction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,6 +15,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool islogin = false;
+  checkUser() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    islogin = sp.getBool('isLoginUser') ?? false;
+    if (islogin) {
+      Get.to(HomeScreen());
+    } else {
+      Get.to(() => InstructionScreens());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
               GestureDetector(
                 onTap: () {
                   // Get.to(() => HomeScreen());
-                  Get.to(() => InstructionScreens());
+                  checkUser();
                 },
                 child: Container(
                   height: 54,

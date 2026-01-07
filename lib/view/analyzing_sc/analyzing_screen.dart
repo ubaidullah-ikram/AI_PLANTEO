@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view/home_screen/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AnalyzingScreen extends StatefulWidget {
   const AnalyzingScreen({super.key});
@@ -32,9 +33,15 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
     // Navigate to home screen jab progress complete ho
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
+        setUserSession();
         Get.to(() => HomeScreen());
       }
     });
+  }
+
+  setUserSession() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    await sp.setBool('isLoginUser', true);
   }
 
   @override
