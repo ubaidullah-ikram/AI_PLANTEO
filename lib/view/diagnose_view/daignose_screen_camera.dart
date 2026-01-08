@@ -579,11 +579,17 @@ import 'package:plantify/view/diagnose_view/widgets/overlay_animation.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'dart:io';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
+import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class DiagnosePlantScreen extends StatefulWidget {
   bool isfromHome;
-  DiagnosePlantScreen({Key? key, required this.isfromHome}) : super(key: key);
+  bool isfromIdentify;
+  DiagnosePlantScreen({
+    Key? key,
+    required this.isfromHome,
+    required this.isfromIdentify,
+  }) : super(key: key);
 
   @override
   State<DiagnosePlantScreen> createState() => _DiagnosePlantScreenState();
@@ -592,16 +598,21 @@ class DiagnosePlantScreen extends StatefulWidget {
 class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     with TickerProviderStateMixin {
   final cameraCtrl = Get.find<DiagnoseCameraController>();
+  PlantIdentifierController _identifierController = Get.put(
+    PlantIdentifierController(),
+    permanent: true,
+  );
   bool showScanning = false;
   late AnimationController _step1Controller;
   late AnimationController _step2Controller;
   late AnimationController _step3Controller;
-  ApiToolController _apiToolController = Get.put(ApiToolController());
   @override
   void initState() {
     super.initState();
     _checkPermissionAndInit();
-
+    if (widget.isfromIdentify) {
+      isTabSelected = 1;
+    }
     // Initialize animation controllers
     _step1Controller = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -620,6 +631,7 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
   Future<void> _checkPermissionAndInit() async {
     try {
       await cameraCtrl.initializeCamera();
+
       if (!widget.isfromHome) {
         log('Starting scanning from non-home route');
         _startScanning();
@@ -656,14 +668,48 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
           }
         });
 
-        Future.delayed(const Duration(seconds: 3), () {
-          if (mounted) {
-            Get.off(() => DiagnoseResultScreen());
-          }
-        });
+        // Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          // Get.off(() => DiagnoseResultScreen());
+        }
+        // });
       }
     } else {
-      Get.off(() => DiagnoseInfoScreen());
+      if (isTabSelected == 0) {
+        log('its request for diagnose info options');
+        Get.off(() => DiagnoseInfoScreen());
+      } else {
+        log('its request for identify plant');
+        _identifierController.identifyPlant(
+          imagePath: cameraCtrl.selectedCaptureImagePath.value,
+        );
+        if (mounted) {
+          setState(() => showScanning = true);
+          cameraCtrl.isScanning.value = true;
+
+          _step1Controller.forward();
+
+          Future.delayed(const Duration(milliseconds: 800), () {
+            if (mounted) _step2Controller.forward();
+          });
+
+          Future.delayed(const Duration(milliseconds: 1600), () {
+            if (mounted) _step3Controller.forward();
+          });
+
+          Future.delayed(const Duration(milliseconds: 2000), () {
+            if (mounted) {
+              _step3Controller.repeat(reverse: true);
+            }
+          });
+
+          // Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            // Get.off(() => DiagnoseResultScreen());
+          }
+          // });
+        }
+      }
     }
   }
 
@@ -674,7 +720,9 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     return WillPopScope(
       onWillPop: () async {
         // Resume camera when popping
-        await cameraCtrl.resumeCameraPreview();
+        // await cameraCtrl.resumeCameraPreview();
+
+        await cameraCtrl.disposeCameraProper();
         return true;
       },
       child: Scaffold(

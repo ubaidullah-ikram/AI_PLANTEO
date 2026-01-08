@@ -125,6 +125,9 @@ class DiagnoseCameraController extends GetxController {
   RxBool isCameraInitialized = false.obs;
   RxBool isScanning = false.obs;
   final RxList<Uint8List> capturedImages = <Uint8List>[].obs;
+  // final RxList<String> capturedImages = <String>[].obs;
+  final selectedCaptureImagePath = ''.obs;
+  final selectedTemp = ''.obs;
 
   // Track if camera is being used
   bool _isCameraInUse = false;
@@ -173,11 +176,13 @@ class DiagnoseCameraController extends GetxController {
 
   Future<void> captureImage() async {
     try {
-      if (controller != null &&
-          controller!.value.isInitialized &&
-          _isCameraInUse) {
+      if (controller != null && controller!.value.isInitialized
+      //  &&
+      // _isCameraInUse
+      ) {
         final image = await controller!.takePicture();
         final bytes = await File(image.path).readAsBytes();
+        selectedCaptureImagePath.value = image.path;
         capturedImages.add(bytes);
         log('Image captured and added. Total images: ${capturedImages.length}');
       }
@@ -221,6 +226,7 @@ class DiagnoseCameraController extends GetxController {
         await controller!.dispose();
         controller = null;
         isCameraInitialized.value = false;
+        resetImages();
         log('Camera disposed properly');
       }
     } catch (e) {

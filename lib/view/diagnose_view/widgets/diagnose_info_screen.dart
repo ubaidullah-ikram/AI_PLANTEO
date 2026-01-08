@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
 
 class DiagnoseInfoScreen extends StatefulWidget {
@@ -25,6 +26,11 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
   // Har screen ke liye selected options store karne ke liye
   Map<int, Set<int>> _selectedOptions = {};
 
+  final cameraCtrl = Get.find<DiagnoseCameraController>();
+  ApiToolController _apiToolController = Get.put(
+    ApiToolController(),
+    permanent: true,
+  );
   @override
   void initState() {
     super.initState();
@@ -49,6 +55,8 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
     super.dispose();
   }
 
+  String _watering_selection = 'Daily';
+  String lightCondition_location = 'Indoors, close to a bright window';
   void _toggleOption(int optionIndex) {
     setState(() {
       if (_selectedOptions[_currentIndex]!.contains(optionIndex)) {
@@ -69,9 +77,25 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
       });
     } else {
       log('its done now request');
-      Get.off(() => DiagnosePlantScreen(isfromHome: false));
-      // Last screen par "Done" button press hone par
-      // Navigator.of(context).pop();
+      // Get.off(() => DiagnosePlantScreen(isfromHome: false));
+      log('the image path  is ${cameraCtrl.selectedCaptureImagePath.value}');
+      log('the wateringFrequency  is ${_watering_selection}');
+
+      log('the lightCondition  is ${lightCondition_location}');
+      log('the humidity  is ${selectedRisk}');
+      log(
+        'the temperature  is ${tempSlider.toStringAsFixed(0)} ${cameraCtrl.selectedTemp.value}',
+      );
+      _apiToolController.diagnosePlant(
+        imagePath: cameraCtrl.selectedCaptureImagePath.value,
+        environmentData: PlantEnvironmentData(
+          wateringFrequency: _watering_selection,
+          lightCondition: lightCondition_location,
+          humidity: selectedRisk,
+          temperature:
+              "${tempSlider.toStringAsFixed(0)} ${cameraCtrl.selectedTemp.value}",
+        ),
+      );
     }
   }
 
@@ -244,6 +268,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
           onPressed: () {
             setState(() {
               selectedRisk = risk;
+              log('the humadity level ${risk}');
             });
           },
           child: Text(
@@ -261,7 +286,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
     );
   }
 
-  String selectedUnit = 'C';
+  // String selectedUnit = 'C';
 
   String selectedRisk = 'High';
   double sliderValue = 80;
@@ -341,9 +366,16 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                     // isSelected: _selectedOptions[_currentIndex]!.contains(index),
                     onTap: () {
                       option_selected_index = index;
+                      if (_currentIndex == 0) {
+                        lightCondition_location =
+                            diagnoseController.screens[0].options[index];
+                      } else if (_currentIndex == 1) {
+                        _watering_selection =
+                            diagnoseController.screens[1].options[index];
+                      }
                       setState(() {});
                       log(
-                        "the selection from first frame is ${diagnoseController.screens[_currentIndex].options[index]}",
+                        "the selection from $index first frame is ${lightCondition_location} and second value is $_watering_selection",
                       );
                       ;
                       // _toggleOption(index);
@@ -553,6 +585,14 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
               child: Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: TabBar(
+                  onTap: (value) {
+                    log(value.toString());
+                    if (value == 0) {
+                      cameraCtrl.selectedTemp.value = "C";
+                    } else {
+                      cameraCtrl.selectedTemp.value = "F";
+                    }
+                  },
                   labelStyle: TextStyle(color: AppColors.textHeading),
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicator: BoxDecoration(
@@ -593,18 +633,21 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                       onChanged: (value) {
                         setState(() {
                           tempSlider = value;
+                          // log('temp value ${tempSlider.toStringAsFixed(0)}');
                         });
                       },
                     ),
                   ),
                 ),
                 SizedBox(width: 10),
-                Text(
-                  '${tempSlider.toInt()}%',
-                  style: TextStyle(
-                    color: AppColors.textHeading,
-                    fontSize: 18,
-                    // fontWeight: FontWeight.bold,
+                Obx(
+                  () => Text(
+                    '${tempSlider.toInt()} ${cameraCtrl.selectedTemp.value}',
+                    style: TextStyle(
+                      color: AppColors.textHeading,
+                      fontSize: 18,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

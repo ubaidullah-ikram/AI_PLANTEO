@@ -312,9 +312,18 @@ class _HomeScreenState extends State<HomeScreen> {
         GestureDetector(
           onTap: () {
             if (index == 0) {
+              Get.to(
+                () =>
+                    DiagnosePlantScreen(isfromHome: true, isfromIdentify: true),
+              );
               // Get.to(() => PlanteoExpertScreen());
             } else if (index == 1) {
-              Get.to(() => DiagnosePlantScreen(isfromHome: true));
+              Get.to(
+                () => DiagnosePlantScreen(
+                  isfromHome: true,
+                  isfromIdentify: false,
+                ),
+              );
             } else if (index == 2) {
               // Get.to(() => PlanteoExpertScreen());
             }
