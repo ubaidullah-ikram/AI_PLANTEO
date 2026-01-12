@@ -1,9 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
-import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
+import 'package:plantify/constant/app_icons.dart';
+import 'package:plantify/constant/app_images.dart';
+import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
+import 'package:svg_flutter/svg_flutter.dart';
 
 class PlantIdentifierResultScreen extends StatefulWidget {
   const PlantIdentifierResultScreen({super.key});
@@ -15,7 +21,7 @@ class PlantIdentifierResultScreen extends StatefulWidget {
 
 class _PlantIdentifierResultScreenState
     extends State<PlantIdentifierResultScreen> {
-  final cameraCtrl = Get.find<DiagnoseCameraController>();
+  final cameraCtrl = Get.find<CustomCamerController>();
   final identifierCtrl = Get.find<PlantIdentifierController>();
   @override
   void dispose() {
@@ -24,6 +30,19 @@ class _PlantIdentifierResultScreenState
     cameraCtrl.capturedImages.clear();
   }
 
+  getImageToshow() {
+    imageToshow = cameraCtrl.capturedImages.first;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getImageToshow();
+  }
+
+  Uint8List? imageToshow;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +99,7 @@ class _PlantIdentifierResultScreenState
               ClipRRect(
                 borderRadius: BorderRadius.circular(24),
                 child: Image.memory(
-                  cameraCtrl.capturedImages.first,
+                  imageToshow ?? cameraCtrl.capturedImages.first,
                   height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -122,7 +141,7 @@ class _PlantIdentifierResultScreenState
                         fontFamily: AppFonts.sfPro,
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xff797979),
+                        color: AppColors.themeColor,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -134,7 +153,7 @@ class _PlantIdentifierResultScreenState
                       style: TextStyle(
                         fontFamily: AppFonts.sfPro,
                         fontSize: 13,
-                        color: Color(0xff555555),
+                        color: Color(0xff797979),
                         height: 1.6,
                       ),
                     ),
@@ -161,86 +180,73 @@ class _PlantIdentifierResultScreenState
                     SizedBox(height: 16),
 
                     // Confidence Meter
-                    Row(
-                      children: [
-                        Text(
-                          'Confidence: ${(identifierData.confidence * 100).toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            fontFamily: AppFonts.sfPro,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.themeColor,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: identifierData.confidence,
-                              minHeight: 6,
-                              backgroundColor: Colors.grey.shade300,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                identifierData.confidence > 0.85
-                                    ? Colors.green
-                                    : identifierData.confidence > 0.7
-                                    ? Colors.orange
-                                    : Colors.red,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       'Confidence: ${(identifierData.confidence * 100).toStringAsFixed(0)}%',
+                    //       style: TextStyle(
+                    //         fontFamily: AppFonts.sfPro,
+                    //         fontSize: 12,
+                    //         fontWeight: FontWeight.w600,
+                    //         color: AppColors.themeColor,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 12),
+                    //     Expanded(
+                    //       child: ClipRRect(
+                    //         borderRadius: BorderRadius.circular(4),
+                    //         child: LinearProgressIndicator(
+                    //           value: identifierData.confidence,
+                    //           minHeight: 6,
+                    //           backgroundColor: Colors.grey.shade300,
+                    //           valueColor: AlwaysStoppedAnimation<Color>(
+                    //             identifierData.confidence > 0.85
+                    //                 ? Colors.green
+                    //                 : identifierData.confidence > 0.7
+                    //                 ? Colors.orange
+                    //                 : Colors.red,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
               SizedBox(height: 16),
 
               // Low Confidence Warning
-              if (isLowConfidence)
-                Container(
-                  padding: EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    border: Border.all(color: Colors.orange.shade300),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        color: Colors.orange.shade700,
-                        size: 20,
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Low confidence. This might not be accurate.',
-                          style: TextStyle(
-                            fontFamily: AppFonts.sfPro,
-                            fontSize: 12,
-                            color: Colors.orange.shade700,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              SizedBox(height: 16),
-
-              // Care Plan Section
-              Text(
-                'Care Plan',
-                style: TextStyle(
-                  fontFamily: AppFonts.sfPro,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 12),
+              // if (isLowConfidence)
+              //   Container(
+              //     padding: EdgeInsets.all(14),
+              //     decoration: BoxDecoration(
+              //       color: Colors.orange.shade50,
+              //       border: Border.all(color: Colors.orange.shade300),
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         Icon(
+              //           Icons.info_outline_rounded,
+              //           color: Colors.orange.shade700,
+              //           size: 20,
+              //         ),
+              //         SizedBox(width: 12),
+              //         Expanded(
+              //           child: Text(
+              //             'Low confidence. This might not be accurate.',
+              //             style: TextStyle(
+              //               fontFamily: AppFonts.sfPro,
+              //               fontSize: 12,
+              //               color: Colors.orange.shade700,
+              //               fontWeight: FontWeight.w500,
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
 
               // Care Points
               Container(
@@ -251,10 +257,29 @@ class _PlantIdentifierResultScreenState
                   color: Colors.white,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: identifierData.carePoints
-                      .map((point) => _buildCarePoint(point))
-                      .toList(),
+                  children: [
+                    // Care Plan Section
+                    Row(
+                      children: [
+                        Text(
+                          'Care Plan',
+                          style: TextStyle(
+                            fontFamily: AppFonts.sfPro,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: identifierData.carePoints
+                          .map((point) => _buildCarePoint(point))
+                          .toList(),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 24),
@@ -262,7 +287,14 @@ class _PlantIdentifierResultScreenState
               // Action Button
               GestureDetector(
                 onTap: () {
-                  Get.back();
+                  // Get.back();
+                  Get.to(
+                    () => DiagnosePlantScreen(
+                      isfromPlantIdentifyResult: true,
+                      isfromHome: true,
+                      isfromIdentify: false,
+                    ),
+                  );
                 },
                 child: Container(
                   height: 56,
@@ -317,25 +349,25 @@ class _PlantIdentifierResultScreenState
     final title = parts.isNotEmpty ? parts[0].trim() : 'Care Tip';
     final detail = parts.length > 1 ? parts.sublist(1).join(':').trim() : '';
 
-    IconData iconData = Icons.info_outline;
+    String icon = AppIcons.temperature;
     Color iconColor = Color(0xff797979);
 
     // Assign icons based on title
     if (title.toLowerCase().contains('temperature')) {
-      iconData = Icons.thermostat;
+      icon = AppIcons.temperature;
       iconColor = Colors.red;
     } else if (title.toLowerCase().contains('sunlight') ||
         title.toLowerCase().contains('light')) {
-      iconData = Icons.wb_sunny;
+      icon = AppIcons.sunlight_identify_result;
       iconColor = Colors.orange;
     } else if (title.toLowerCase().contains('water')) {
-      iconData = Icons.water_drop;
+      icon = AppIcons.watering_identify_result;
       iconColor = Colors.blue;
     } else if (title.toLowerCase().contains('repot')) {
-      iconData = Icons.pets;
+      icon = AppIcons.reporting;
       iconColor = Colors.brown;
     } else if (title.toLowerCase().contains('pest')) {
-      iconData = Icons.bug_report;
+      icon = AppIcons.pests;
       iconColor = Colors.red;
     }
 
@@ -345,22 +377,24 @@ class _PlantIdentifierResultScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(iconData, color: iconColor, size: 20),
-              ),
-              SizedBox(width: 12),
+              SvgPicture.asset(icon, height: 20),
+              // Container(
+              //   // padding: EdgeInsets.all(8),
+              //   decoration: BoxDecoration(
+              //     color: iconColor.withOpacity(0.1),
+              //     borderRadius: BorderRadius.circular(8),
+              //   ),
+              //   child: Icon(iconData, color: iconColor, size: 20),
+              // ),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
                     fontFamily: AppFonts.sfPro,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.black,
                   ),
@@ -369,16 +403,15 @@ class _PlantIdentifierResultScreenState
             ],
           ),
           if (detail.isNotEmpty) ...[
-            SizedBox(height: 6),
             Padding(
-              padding: EdgeInsets.only(left: 40),
+              padding: EdgeInsets.only(left: 25),
               child: Text(
                 detail,
                 style: TextStyle(
                   fontFamily: AppFonts.sfPro,
                   fontSize: 12,
                   color: Color(0xff797979),
-                  height: 1.4,
+                  // height: 1.4,
                 ),
               ),
             ),

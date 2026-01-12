@@ -4,45 +4,11 @@ import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:plantify/models/plant_idenfier_model.dart';
 import 'dart:developer' as dev;
 
 import 'package:plantify/services/remote_config_service.dart';
-import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/identify_plant_view/identify_plant_result_sc.dart';
-
-// ============ Models ============
-
-class PlantIdentifierData {
-  final String plantName;
-  final String scientificName;
-  final String description;
-  final List<String> characteristics; // Tags like "carnivorous", "tropical"
-  final List<String> carePoints; // Temperature, Sunlight, Watering, etc
-  final String imagePath;
-  final double confidence;
-
-  PlantIdentifierData({
-    required this.plantName,
-    required this.scientificName,
-    required this.description,
-    required this.characteristics,
-    required this.carePoints,
-    required this.imagePath,
-    required this.confidence,
-  });
-
-  factory PlantIdentifierData.fromJson(Map<String, dynamic> json) {
-    return PlantIdentifierData(
-      plantName: json['plant_name'] ?? 'Unknown Plant',
-      scientificName: json['scientific_name'] ?? 'N/A',
-      description: json['description'] ?? '',
-      characteristics: List<String>.from(json['characteristics'] ?? []),
-      carePoints: List<String>.from(json['care_points'] ?? []),
-      imagePath: json['image_path'] ?? '',
-      confidence: (json['confidence'] ?? 0.0).toDouble(),
-    );
-  }
-}
 
 // ============ Plant Identifier Controller ============
 

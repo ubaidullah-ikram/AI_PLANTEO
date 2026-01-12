@@ -12,7 +12,7 @@ import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:plantify/view/setting_sc/setting_screen.dart';
-import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
+import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final cameraCtrl = Get.put(DiagnoseCameraController());
+  final cameraCtrl = Get.put(CustomCamerController());
   final List<Map<String, dynamic>> cards = [
     {
       'title': 'Reminder',
@@ -312,12 +312,14 @@ class _HomeScreenState extends State<HomeScreen> {
         GestureDetector(
           onTap: () {
             if (index == 0) {
+              // identifier
               Get.to(
                 () =>
                     DiagnosePlantScreen(isfromHome: true, isfromIdentify: true),
               );
               // Get.to(() => PlanteoExpertScreen());
             } else if (index == 1) {
+              // diagnose
               Get.to(
                 () => DiagnosePlantScreen(
                   isfromHome: true,
@@ -325,6 +327,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             } else if (index == 2) {
+              /// mushroom
+              Get.to(
+                () => DiagnosePlantScreen(
+                  isfromHome: true,
+                  isfromIdentify: true,
+                  isfromMushroom: true,
+                ),
+              );
               // Get.to(() => PlanteoExpertScreen());
             }
           },

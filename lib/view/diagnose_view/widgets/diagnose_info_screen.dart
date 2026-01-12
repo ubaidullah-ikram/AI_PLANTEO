@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
+import 'package:plantify/models/diagnose_model.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
-import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
+import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 
 class DiagnoseInfoScreen extends StatefulWidget {
   const DiagnoseInfoScreen({Key? key}) : super(key: key);
@@ -19,16 +20,16 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  var diagnoseController = Get.put(DiagnoseCameraController());
+  var diagnoseController = Get.put(CustomCamerController());
   int _currentIndex = 0;
   int option_selected_index = 0;
 
   // Har screen ke liye selected options store karne ke liye
   Map<int, Set<int>> _selectedOptions = {};
 
-  final cameraCtrl = Get.find<DiagnoseCameraController>();
-  ApiToolController _apiToolController = Get.put(
-    ApiToolController(),
+  final cameraCtrl = Get.find<CustomCamerController>();
+  DiagnoseApiController _apiToolController = Get.put(
+    DiagnoseApiController(),
     permanent: true,
   );
   @override
@@ -290,7 +291,7 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
 
   String selectedRisk = 'High';
   double sliderValue = 80;
-  double tempSlider = 60;
+  double tempSlider = 30;
   Widget _diagnoseOptionFrame1() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

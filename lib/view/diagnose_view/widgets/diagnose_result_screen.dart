@@ -277,7 +277,7 @@ import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
-import 'package:plantify/view_model/camera_controller/diagnose_camera_controller.dart';
+import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 
 class DiagnoseResultScreen extends StatefulWidget {
@@ -288,13 +288,14 @@ class DiagnoseResultScreen extends StatefulWidget {
 }
 
 class _DiagnoseResultScreenState extends State<DiagnoseResultScreen> {
-  final cameraCtrl = Get.find<DiagnoseCameraController>();
-  final apicontroller = Get.find<ApiToolController>();
+  final cameraCtrl = Get.find<CustomCamerController>();
+  final apicontroller = Get.find<DiagnoseApiController>();
   @override
   void dispose() {
-    // TODO: implement dispose
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cameraCtrl.capturedImages.clear();
+    });
     super.dispose();
-    cameraCtrl.capturedImages.clear();
   }
 
   @override

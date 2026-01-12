@@ -39,4 +39,11 @@ class AppIcons {
   static const common_problem = "${baseUrl}common_problem.svg";
   static const care_tips = "${baseUrl}care_tips.svg";
   static const treatment = "${baseUrl}treatment.svg";
+  static const temperature = "${baseUrl}temperature.svg";
+  static const pests = "${baseUrl}pests.svg";
+  static const reporting = "${baseUrl}reporting.svg";
+  static const sunlight_identify_result =
+      "${baseUrl}sunlight_identify_result.svg";
+  static const watering_identify_result =
+      "${baseUrl}watering_identify_result.svg";
 }
