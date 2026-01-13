@@ -42,6 +42,8 @@ class AppIcons {
   static const temperature = "${baseUrl}temperature.svg";
   static const pests = "${baseUrl}pests.svg";
   static const reporting = "${baseUrl}reporting.svg";
+  static const error_lightMeter = "${baseUrl}error_lightMeter.svg";
+  static const reading_lightMeter = "${baseUrl}reading_lightMeter.svg";
   static const sunlight_identify_result =
       "${baseUrl}sunlight_identify_result.svg";
   static const watering_identify_result =
