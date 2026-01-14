@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
+import 'package:plantify/services/notification_service.dart';
 import 'package:plantify/view/reminders_view/widgets/prevoius_card_widget.dart';
 
 import 'package:plantify/view/reminders_view/widgets/remind_me_about.dart';
@@ -133,28 +134,49 @@ class _ReminderScreenState extends State<ReminderScreen> {
                   const SizedBox(height: 16),
 
                   // Turn on Reminder Button
-                  Container(
-                    height: 55,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: widget.isfromEdit
-                          ? Border.all(color: AppColors.themeColor)
-                          : null,
-                      borderRadius: BorderRadius.circular(16),
-                      color: widget.isfromEdit
-                          ? Colors.transparent
-                          : AppColors.themeColor,
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget.isfromEdit
-                            ? "Turn Off Reminder"
-                            : 'Turn on Reminder',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: widget.isfromEdit ? Colors.red : Colors.white,
-                          // color: reminderEnabled ? Colors.white : Colors.grey[600],
+                  GestureDetector(
+                    onTap: () async {
+                      // Pehle instant notification dekh lo
+                      await NotificationService.instance.showTestNotification();
+
+                      // Phir 5 minute baad schedule karo (1 minute bahut kam hai)
+                      await NotificationService.instance.scheduleNotification(
+                        id: 1,
+                        title: '🌱 Test Reminder',
+                        body: 'Notification working successfully',
+                        minutesFromNow: 1, // Kam se kam 5 minute
+                      );
+
+                      // Pending notifications dekho (debug ke liye)
+                      final pending = await NotificationService.instance
+                          .getPendingNotifications();
+                      print('Total pending: ${pending.length}');
+                    },
+                    child: Container(
+                      height: 55,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: widget.isfromEdit
+                            ? Border.all(color: AppColors.themeColor)
+                            : null,
+                        borderRadius: BorderRadius.circular(16),
+                        color: widget.isfromEdit
+                            ? Colors.transparent
+                            : AppColors.themeColor,
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.isfromEdit
+                              ? "Turn Off Reminder"
+                              : 'Turn on Reminder',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: widget.isfromEdit
+                                ? Colors.red
+                                : Colors.white,
+                            // color: reminderEnabled ? Colors.white : Colors.grey[600],
+                          ),
                         ),
                       ),
                     ),
@@ -205,6 +227,14 @@ class _ReminderScreenState extends State<ReminderScreen> {
         ),
       ),
     );
+  }
+
+  DateTime safeDateTime(DateTime selected) {
+    final now = DateTime.now();
+    if (selected.isBefore(now)) {
+      return selected.add(const Duration(days: 1));
+    }
+    return selected;
   }
 
   void _showTimePicker() {
