@@ -229,7 +229,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           // Card click action
                           if (index == 0) {
-                            Get.to(() => ReminderScreen(isfromEdit: false));
+                            Get.to(() => MyGardenScreen(isfromReminder: true));
+                            // Get.to(() => ReminderScreen(isfromEdit: false));
                           } else if (index == 2) {
                             Get.to(() => MyGardenScreen());
                           } else {

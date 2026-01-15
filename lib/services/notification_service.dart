@@ -1,5 +1,4 @@
 // import 'dart:developer';
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:permission_handler/permission_handler.dart';
@@ -15,8 +14,15 @@
 
 //   /// 🔹 Call this on app start (main)
 //   Future<void> init() async {
-//     // Timezone init (VERY IMPORTANT)
+//     // Request permissions
 //     await Permission.notification.request();
+
+//     // Android 12+ exact alarm permission
+//     if (await Permission.scheduleExactAlarm.isDenied) {
+//       await Permission.scheduleExactAlarm.request();
+//     }
+
+//     // Timezone init (VERY IMPORTANT)
 //     tz.initializeTimeZones();
 //     tz.setLocalLocation(tz.getLocation('Asia/Karachi'));
 
@@ -28,82 +34,113 @@
 //     );
 
 //     await _notificationsPlugin.initialize(initSettings);
+
+//     log('✅ Notification Service Initialized');
 //   }
 
 //   Future<void> scheduleNotification({
 //     required int id,
 //     required String title,
 //     required String body,
+//     int minutesFromNow = 5, // کم از کم 5 منٹ
 //   }) async {
-//     final DateTime now = DateTime.now();
-//     final DateTime testTime = now.add(const Duration(minutes: 1));
+//     try {
+//       final DateTime now = DateTime.now();
+//       final DateTime scheduledTime = now.add(Duration(minutes: minutesFromNow));
 
-//     log('NOW (local)          : $now');
-//     log('SCHEDULED (DateTime) : $testTime');
+//       log('NOW (Local)          : $now');
+//       log('SCHEDULED (DateTime) : $scheduledTime');
 
-//     final tz.TZDateTime tzDateTime = tz.TZDateTime.from(testTime, tz.local);
+//       // TZDateTime میں convert کریں
+//       final tz.TZDateTime tzDateTime = tz.TZDateTime(
+//         tz.getLocation('Asia/Karachi'),
+//         scheduledTime.year,
+//         scheduledTime.month,
+//         scheduledTime.day,
+//         scheduledTime.hour,
+//         scheduledTime.minute,
+//         scheduledTime.second,
+//       );
 
-//     log('SCHEDULED (TZ)       : $tzDateTime');
-//     log('TIMEZONE             : ${tz.local.name}');
+//       log('SCHEDULED (TZ)       : $tzDateTime');
+//       log('TIMEZONE             : ${tz.local.name}');
 
-//     const AndroidNotificationDetails androidDetails =
-//         AndroidNotificationDetails(
-//           'plant_reminder_channel',
-//           'Plant Reminders',
-//           channelDescription: 'Plant care reminders',
-//           importance: Importance.max,
-//           priority: Priority.high,
-//         );
+//       const AndroidNotificationDetails androidDetails =
+//           AndroidNotificationDetails(
+//             'plant_reminder_channel',
+//             'Plant Reminders',
+//             channelDescription: 'Plant care reminders',
+//             importance: Importance.max,
+//             priority: Priority.high,
+//             enableVibration: true,
+//             playSound: true,
+//           );
 
-//     const NotificationDetails notificationDetails = NotificationDetails(
-//       android: androidDetails,
-//     );
+//       const NotificationDetails notificationDetails = NotificationDetails(
+//         android: androidDetails,
+//       );
 
-//     await _notificationsPlugin.zonedSchedule(
-//       id,
-//       title,
-//       body,
-//       tzDateTime,
-//       notificationDetails,
+//       await _notificationsPlugin.zonedSchedule(
+//         id,
+//         title,
+//         body,
+//         tzDateTime,
+//         notificationDetails,
+//         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+//       );
 
-//       // 🔥 IMPORTANT: EXACT ALARM
-//       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-//     );
-
-//     log('✅ Notification scheduled successfully (ID: $id)');
+//       log('✅ Notification Scheduled (ID: $id, Time: $tzDateTime)');
+//     } catch (e) {
+//       log('❌ Error scheduling notification: $e');
+//     }
 //   }
 
 //   /// 🧪 INSTANT TEST NOTIFICATION
 //   Future<void> showTestNotification() async {
-//     const AndroidNotificationDetails androidDetails =
-//         AndroidNotificationDetails(
-//           'test_channel',
-//           'Test Notifications',
-//           channelDescription: 'Instant test notification channel',
-//           importance: Importance.max,
-//           priority: Priority.high,
-//         );
+//     try {
+//       const AndroidNotificationDetails androidDetails =
+//           AndroidNotificationDetails(
+//             'test_channel',
+//             'Test Notifications',
+//             channelDescription: 'Instant test notification channel',
+//             importance: Importance.max,
+//             priority: Priority.high,
+//             enableVibration: true,
+//             playSound: true,
+//           );
 
-//     const NotificationDetails notificationDetails = NotificationDetails(
-//       android: androidDetails,
-//     );
+//       const NotificationDetails notificationDetails = NotificationDetails(
+//         android: androidDetails,
+//       );
 
-//     await _notificationsPlugin.show(
-//       999, // unique test ID
-//       '🔔 Test Notification',
-//       'If you see this, notifications are working!',
-//       notificationDetails,
-//     );
+//       await _notificationsPlugin.show(
+//         999,
+//         '🔔 Test Notification',
+//         'If you see this, notifications are working!',
+//         notificationDetails,
+//       );
+
+//       log('✅ Test notification shown');
+//     } catch (e) {
+//       log('❌ Error showing test: $e');
+//     }
+//   }
+
+//   /// Get pending notifications
+//   Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+//     return await _notificationsPlugin.pendingNotificationRequests();
 //   }
 
 //   /// ❌ Cancel single notification
 //   Future<void> cancel(int id) async {
 //     await _notificationsPlugin.cancel(id);
+//     log('Cancelled notification ID: $id');
 //   }
 
 //   /// ❌ Cancel all notifications
 //   Future<void> cancelAll() async {
 //     await _notificationsPlugin.cancelAll();
+//     log('All notifications cancelled');
 //   }
 // }
 import 'dart:developer';
@@ -120,17 +157,13 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  /// 🔹 Call this on app start (main)
+  /// 🔹 Initialize on app start
   Future<void> init() async {
-    // Request permissions
     await Permission.notification.request();
-
-    // Android 12+ exact alarm permission
     if (await Permission.scheduleExactAlarm.isDenied) {
       await Permission.scheduleExactAlarm.request();
     }
 
-    // Timezone init (VERY IMPORTANT)
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Karachi'));
 
@@ -142,24 +175,84 @@ class NotificationService {
     );
 
     await _notificationsPlugin.initialize(initSettings);
-
     log('✅ Notification Service Initialized');
   }
 
+  /// 🔹 Schedule notification with repeat
+  Future<void> scheduleReminderNotification({
+    required int id,
+    required String title,
+    required String body,
+    required int hour,
+    required int minute,
+    required int repeatEveryDays,
+  }) async {
+    try {
+      // Create TZ DateTime
+      final now = DateTime.now();
+      final tz.TZDateTime scheduledTime = tz.TZDateTime(
+        tz.getLocation('Asia/Karachi'),
+        now.year,
+        now.month,
+        now.day,
+        hour,
+        minute,
+      );
+
+      // If time passed, schedule for next day
+      tz.TZDateTime adjustedTime = scheduledTime;
+      if (adjustedTime.isBefore(
+        tz.TZDateTime.now(tz.getLocation('Asia/Karachi')),
+      )) {
+        adjustedTime = adjustedTime.add(const Duration(days: 1));
+      }
+      log('Adjusted Time: $adjustedTime');
+      const AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
+            'plant_reminder_channel',
+            'Plant Reminders',
+            channelDescription: 'Plant care reminders',
+            importance: Importance.max,
+            priority: Priority.high,
+            enableVibration: true,
+            playSound: true,
+          );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+      );
+
+      // Schedule with repeat
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        adjustedTime,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents:
+            DateTimeComponents.time, // ✅ Repeat daily at same time
+      );
+
+      log(
+        '✅ Repeating Notification Scheduled: $title at ${adjustedTime.hour}:${adjustedTime.minute} every $repeatEveryDays days',
+      );
+    } catch (e) {
+      log('❌ Error scheduling notification: $e');
+    }
+  }
+
+  /// 🔹 Schedule one-time notification
   Future<void> scheduleNotification({
     required int id,
     required String title,
     required String body,
-    int minutesFromNow = 5, // کم از کم 5 منٹ
+    int minutesFromNow = 5,
   }) async {
     try {
-      final DateTime now = DateTime.now();
-      final DateTime scheduledTime = now.add(Duration(minutes: minutesFromNow));
+      final now = DateTime.now();
+      final scheduledTime = now.add(Duration(minutes: minutesFromNow));
 
-      log('NOW (Local)          : $now');
-      log('SCHEDULED (DateTime) : $scheduledTime');
-
-      // TZDateTime میں convert کریں
       final tz.TZDateTime tzDateTime = tz.TZDateTime(
         tz.getLocation('Asia/Karachi'),
         scheduledTime.year,
@@ -167,11 +260,7 @@ class NotificationService {
         scheduledTime.day,
         scheduledTime.hour,
         scheduledTime.minute,
-        scheduledTime.second,
       );
-
-      log('SCHEDULED (TZ)       : $tzDateTime');
-      log('TIMEZONE             : ${tz.local.name}');
 
       const AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
@@ -197,20 +286,20 @@ class NotificationService {
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
 
-      log('✅ Notification Scheduled (ID: $id, Time: $tzDateTime)');
+      log('✅ One-time Notification Scheduled (ID: $id)');
     } catch (e) {
-      log('❌ Error scheduling notification: $e');
+      log('❌ Error: $e');
     }
   }
 
-  /// 🧪 INSTANT TEST NOTIFICATION
+  /// 🧪 Instant test notification
   Future<void> showTestNotification() async {
     try {
       const AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
             'test_channel',
             'Test Notifications',
-            channelDescription: 'Instant test notification channel',
+            channelDescription: 'Instant test notification',
             importance: Importance.max,
             priority: Priority.high,
             enableVibration: true,
@@ -230,7 +319,7 @@ class NotificationService {
 
       log('✅ Test notification shown');
     } catch (e) {
-      log('❌ Error showing test: $e');
+      log('❌ Error: $e');
     }
   }
 
@@ -239,13 +328,13 @@ class NotificationService {
     return await _notificationsPlugin.pendingNotificationRequests();
   }
 
-  /// ❌ Cancel single notification
+  /// Cancel single notification
   Future<void> cancel(int id) async {
     await _notificationsPlugin.cancel(id);
     log('Cancelled notification ID: $id');
   }
 
-  /// ❌ Cancel all notifications
+  /// Cancel all notifications
   Future<void> cancelAll() async {
     await _notificationsPlugin.cancelAll();
     log('All notifications cancelled');

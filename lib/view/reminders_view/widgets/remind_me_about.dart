@@ -13,12 +13,12 @@ class RemindMeAboutWidget extends StatefulWidget {
 }
 
 class _RemindMeAboutWidgetState extends State<RemindMeAboutWidget> {
-  var reminderController = Get.put(ReminderController());
+  var reminderController = Get.find<ReminderController>();
   @override
   Widget build(BuildContext context) {
     return Container(
       // height: 64,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),

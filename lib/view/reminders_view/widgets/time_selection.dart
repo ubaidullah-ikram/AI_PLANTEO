@@ -16,13 +16,13 @@ class CustomTimePicker extends StatefulWidget {
 
 class _CustomTimePickerState extends State<CustomTimePicker>
     with TickerProviderStateMixin {
-  final controller = Get.put(ReminderController());
+  var controller = Get.find<ReminderController>();
 
   @override
   Widget build(BuildContext context) {
     var tabcontroller = TabController(length: 2, vsync: this);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -80,6 +80,7 @@ class _CustomTimePickerState extends State<CustomTimePicker>
                         child: TabBar(
                           onTap: (value) {
                             log('time tap $value');
+                            controller.period.value = value == 0 ? "AM" : "PM";
                           },
                           labelStyle: TextStyle(
                             color: AppColors.textHeading,
