@@ -371,12 +371,23 @@ class _DiagnoseResultScreenState extends State<DiagnoseResultScreen> {
                           : ColorFilter.matrix(_getIdentityMatrix()),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: Image.memory(
-                          cameraCtrl.capturedImages.first,
-                          height: 180,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                        child: cameraCtrl.capturedImages.isNotEmpty
+                            ? Image.memory(
+                                cameraCtrl.capturedImages.first,
+                                height: 180,
+                                width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              )
+                            : Image.memory(
+                                Get.find<DiagnoseApiController>().temImage,
+                                height: 180,
+                                width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),

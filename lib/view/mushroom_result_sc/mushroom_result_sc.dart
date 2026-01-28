@@ -1,14 +1,19 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
+import 'package:plantify/models/mushroom_db_model.dart';
 import 'package:plantify/models/mushroom_model.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:plantify/view_model/mushroom_controller/mushroom_controller.dart';
+import 'package:plantify/view_model/my_garden_controller/my_garden_controller.dart';
 
 class MushroomIdentificationResultScreen extends StatefulWidget {
-  const MushroomIdentificationResultScreen({super.key});
+  bool? isfromHistory;
+  MushroomIdentificationResultScreen({super.key, this.isfromHistory});
 
   @override
   State<MushroomIdentificationResultScreen> createState() =>
@@ -27,6 +32,8 @@ class _MushroomIdentificationResultScreenState
     super.initState();
     if (cameraCtrl.capturedImages.isNotEmpty) {
       imageToshow = cameraCtrl.capturedImages.first;
+    } else {
+      // imageToshow = mushroomCtrl.mushroomData.value.imagePath;
     }
   }
 
@@ -106,13 +113,28 @@ class _MushroomIdentificationResultScreenState
               SizedBox(height: 16),
 
               // Mushroom Image
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.memory(
-                  imageToshow ?? cameraCtrl.capturedImages.first,
-                  height: 240,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              Obx(
+                () => ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: cameraCtrl.capturedImages.isEmpty
+                      ? Image.memory(
+                          height: 240,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          widget.isfromHistory == true
+                              ? base64Decode(mushroomData.imagePath)
+                              : Get.find<DiagnoseApiController>().temImage,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
+                        )
+                      : Image.memory(
+                          imageToshow ?? cameraCtrl.capturedImages.first,
+                          height: 240,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
+                        ),
                 ),
               ),
               SizedBox(height: 16),
@@ -211,8 +233,58 @@ class _MushroomIdentificationResultScreenState
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              widget.isfromHistory == false
+                  ? SizedBox(height: 16)
+                  : SizedBox.shrink(),
+              widget.isfromHistory == true
+                  ? SizedBox.shrink()
+                  : GestureDetector(
+                      onTap: () {
+                        final data = mushroomCtrl.mushroomData.value!;
+                        final image =
+                            imageToshow ?? cameraCtrl.capturedImages.first;
 
+                        final saved = SavedMushroomModel(
+                          mushroomName: data.mushroomName,
+                          scientificName: data.scientificName,
+                          description: data.description,
+                          edibility: data.edibility,
+                          characteristics: data.characteristics,
+                          habitat: data.habitat,
+                          lookAlikes: data.lookAlikes,
+                          confidence: data.confidence,
+                          image: image,
+                        );
+
+                        Get.find<MyGardenController>().addMushroom(saved);
+
+                        Get.snackbar(
+                          'Saved',
+                          'Mushroom added to My Garden 🍄',
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      },
+                      child: Container(
+                        height: 56,
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.themeColor,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Add to My Mushrooms',
+                            style: TextStyle(
+                              fontFamily: AppFonts.sfPro,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+              SizedBox(height: 20),
               // Characteristics Card
               if (mushroomData.characteristics.isNotEmpty)
                 Container(

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:developer';
 
+import 'package:plantify/view_model/api_controller/api_controller.dart';
+
 class CustomCamerController extends GetxController {
   CameraController? controller;
   List<CameraDescription>? cameras;
@@ -69,6 +71,7 @@ class CustomCamerController extends GetxController {
         final image = await controller!.takePicture();
         final bytes = await File(image.path).readAsBytes();
         selectedCaptureImagePath.value = image.path;
+        Get.find<DiagnoseApiController>().temImage = bytes;
         capturedImages.add(bytes);
         log('Image captured and added. Total images: ${capturedImages.length}');
       }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_info_screen.dart';
 import 'package:plantify/view/diagnose_view/widgets/overlay_animation.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 
 import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
@@ -34,14 +36,12 @@ class DiagnosePlantScreen extends StatefulWidget {
 class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     with TickerProviderStateMixin {
   final cameraCtrl = Get.find<CustomCamerController>();
-  PlantIdentifierController _identifierController = Get.put(
-    PlantIdentifierController(),
-    permanent: true,
-  );
-  MushroomIdentificationController _mushroomController = Get.put(
-    MushroomIdentificationController(),
-    permanent: true,
-  );
+  PlantIdentifierController _identifierController =
+      Get.find<PlantIdentifierController>();
+  MushroomIdentificationController _mushroomController =
+      Get.find<MushroomIdentificationController>(
+        // permanent: true,
+      );
   bool showScanning = false;
   late AnimationController _step1Controller;
   late AnimationController _step2Controller;
@@ -127,7 +127,9 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     } else {
       if (isTabSelected == 0) {
         log('its request for diagnose info options');
-        Get.off(() => DiagnoseInfoScreen());
+        WidgetsBinding.instance.addPostFrameCallback((s) {
+          Get.off(() => DiagnoseInfoScreen());
+        });
       } else if (isTabSelected == 2) {
         log('its request for identify mushroom');
         _mushroomController.identifyMushroom(
@@ -148,7 +150,8 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
 
   directDiagnoseFromPlantResult() async {
     if (widget.isfromPlantIdentifyResult != null) {
-      await cameraCtrl.pauseCameraPreview();
+      log('its from here isfromPlantIdentifyResult');
+      // await cameraCtrl.pauseCameraPreview();
       _startScanning();
     }
   }
@@ -175,8 +178,12 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
               widget.isfromHome == false
                   ? SizedBox.expand(
                       child: Image.memory(
-                        cameraCtrl.capturedImages.first,
+                        cameraCtrl.capturedImages.isNotEmpty
+                            ? cameraCtrl.capturedImages.first
+                            : Get.find<DiagnoseApiController>().temImage,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.error),
                       ),
                     )
                   : SizedBox.expand(
@@ -558,8 +565,10 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
                             ),
                             // child: CameraPreview(cameraCtrl.controller!),
                             child: Image.memory(
-                              cameraCtrl.capturedImages.first,
+                              Get.find<DiagnoseApiController>().temImage,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -651,6 +660,7 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     _step1Controller.dispose();
     _step2Controller.dispose();
     _step3Controller.dispose();
+    cameraCtrl.disposeCameraProper();
     super.dispose();
   }
 

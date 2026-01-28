@@ -1,18 +1,22 @@
+import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
-import 'package:plantify/constant/app_images.dart';
+import 'package:plantify/models/plant_identify_db_model.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
 import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
+import 'package:plantify/view_model/my_garden_controller/my_garden_controller.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 
 class PlantIdentifierResultScreen extends StatefulWidget {
-  const PlantIdentifierResultScreen({super.key});
+  bool? isfromSavedPlant;
+
+  PlantIdentifierResultScreen({super.key, this.isfromSavedPlant});
 
   @override
   State<PlantIdentifierResultScreen> createState() =>
@@ -23,6 +27,7 @@ class _PlantIdentifierResultScreenState
     extends State<PlantIdentifierResultScreen> {
   final cameraCtrl = Get.find<CustomCamerController>();
   final identifierCtrl = Get.find<PlantIdentifierController>();
+  var mygardenController = Get.find<MyGardenController>();
   @override
   void dispose() {
     // TODO: implement dispose
@@ -31,7 +36,10 @@ class _PlantIdentifierResultScreenState
   }
 
   getImageToshow() {
-    imageToshow = cameraCtrl.capturedImages.first;
+    if (widget.isfromSavedPlant != null) {
+    } else {
+      imageToshow = Get.find<DiagnoseApiController>().temImage;
+    }
     setState(() {});
   }
 
@@ -96,15 +104,31 @@ class _PlantIdentifierResultScreenState
               SizedBox(height: 16),
 
               // Plant Image
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.memory(
-                  imageToshow ?? cameraCtrl.capturedImages.first,
-                  height: 240,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              Obx(
+                () => ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: cameraCtrl.capturedImages.isEmpty
+                      ? Image.memory(
+                          height: 240,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          widget.isfromSavedPlant == true
+                              ? base64Decode(identifierData.imagePath)
+                              : Get.find<DiagnoseApiController>().temImage,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
+                        )
+                      : Image.memory(
+                          imageToshow ?? cameraCtrl.capturedImages.first,
+                          height: 240,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
+                        ),
                 ),
               ),
+
               SizedBox(height: 16),
 
               // Plant Info Card
@@ -247,6 +271,49 @@ class _PlantIdentifierResultScreenState
               //       ],
               //     ),
               //   ),
+              widget.isfromSavedPlant == true
+                  ? SizedBox.shrink()
+                  : GestureDetector(
+                      onTap: () {
+                        final plant = SavedPlantModel(
+                          plantName: identifierData.plantName,
+                          scientificName: identifierData.scientificName,
+                          description: identifierData.description,
+                          characteristics: identifierData.characteristics,
+                          carePoints: identifierData.carePoints,
+                          confidence: identifierData.confidence,
+                          image: imageToshow ?? cameraCtrl.capturedImages.first,
+                        );
+
+                        Get.find<MyGardenController>().addPlant(plant);
+
+                        Get.snackbar(
+                          'Saved 🌱',
+                          'Plant added to My Plants',
+                          backgroundColor: Colors.green.shade600,
+                          colorText: Colors.white,
+                        );
+                      },
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.themeColor),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Add to My Plants',
+                            style: TextStyle(
+                              fontFamily: AppFonts.sfPro,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.themeColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+              SizedBox(height: 12),
 
               // Care Points
               Container(
@@ -285,36 +352,38 @@ class _PlantIdentifierResultScreenState
               SizedBox(height: 24),
 
               // Action Button
-              GestureDetector(
-                onTap: () {
-                  // Get.back();
-                  Get.to(
-                    () => DiagnosePlantScreen(
-                      isfromPlantIdentifyResult: true,
-                      isfromHome: true,
-                      isfromIdentify: false,
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.themeColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Diagnose This Plant',
-                      style: TextStyle(
-                        fontFamily: AppFonts.sfPro,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // widget.isfromSavedPlant == true
+              //     ? SizedBox.shrink()
+              //     : GestureDetector(
+              //         onTap: () {
+              //           // Get.back();
+              //           Get.to(
+              //             () => DiagnosePlantScreen(
+              //               isfromPlantIdentifyResult: true,
+              //               isfromHome: true,
+              //               isfromIdentify: false,
+              //             ),
+              //           );
+              //         },
+              //         child: Container(
+              //           height: 56,
+              //           decoration: BoxDecoration(
+              //             color: AppColors.themeColor,
+              //             borderRadius: BorderRadius.circular(12),
+              //           ),
+              //           child: Center(
+              //             child: Text(
+              //               'Diagnose This Plant',
+              //               style: TextStyle(
+              //                 fontFamily: AppFonts.sfPro,
+              //                 fontSize: 16,
+              //                 fontWeight: FontWeight.w600,
+              //                 color: Colors.white,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
               SizedBox(height: 20),
             ],
           );

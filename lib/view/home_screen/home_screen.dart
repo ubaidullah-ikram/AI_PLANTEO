@@ -12,7 +12,11 @@ import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:plantify/view/setting_sc/setting_screen.dart';
+import 'package:plantify/view_model/api_controller/api_controller.dart';
 import 'package:plantify/view_model/camera_controller/custom_camera_controller.dart';
+import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
+import 'package:plantify/view_model/mushroom_controller/mushroom_controller.dart';
+import 'package:plantify/view_model/my_garden_controller/my_garden_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +28,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final cameraCtrl = Get.put(CustomCamerController());
+  var mygardenController = Get.put(MyGardenController());
+  PlantIdentifierController _identifierController = Get.put(
+    PlantIdentifierController(),
+    permanent: true,
+  );
+  MushroomIdentificationController _mushroomIdentificationController = Get.put(
+    MushroomIdentificationController(),
+  );
+  DiagnoseApiController _diagnoseApiController = Get.put(
+    DiagnoseApiController(),
+  );
+
   final List<Map<String, dynamic>> cards = [
     {
       'title': 'Reminder',

@@ -76,17 +76,11 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
         });
         _fadeController.forward();
       });
+
+      log('message ${_currentIndex}');
     } else {
       log('its done now request');
-      // Get.off(() => DiagnosePlantScreen(isfromHome: false));
-      log('the image path  is ${cameraCtrl.selectedCaptureImagePath.value}');
-      log('the wateringFrequency  is ${_watering_selection}');
 
-      log('the lightCondition  is ${lightCondition_location}');
-      log('the humidity  is ${selectedRisk}');
-      log(
-        'the temperature  is ${tempSlider.toStringAsFixed(0)} ${cameraCtrl.selectedTemp.value}',
-      );
       _apiToolController.diagnosePlant(
         imagePath: cameraCtrl.selectedCaptureImagePath.value,
         environmentData: PlantEnvironmentData(

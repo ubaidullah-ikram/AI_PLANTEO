@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -19,7 +21,7 @@ class DiagnoseApiController extends GetxController {
   final diagnosisData = Rxn<DiagnosisData>();
   final errorMessage = ''.obs;
   final selectedImagePath = ''.obs;
-
+  Uint8List temImage = Uint8List(0);
   // API Config
   static String GEMINI_API_KEY = RemoteConfigService().api_key_gemini;
   static const String GEMINI_BASE_URL =
@@ -80,7 +82,7 @@ class DiagnoseApiController extends GetxController {
       isLoading.value = false;
       Get.off(() => DiagnoseResultScreen());
       Fluttertoast.showToast(
-        msg: 'Plant identified successfully!',
+        msg: 'Plant Diagnosed successfully!',
         toastLength: Toast.LENGTH_SHORT,
       );
     } on TimeoutException catch (e) {
