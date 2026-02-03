@@ -1,11 +1,14 @@
 import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_info_screen.dart';
 import 'package:plantify/view/diagnose_view/widgets/overlay_animation.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
@@ -96,7 +99,7 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
     }
   }
 
-  void _startScanning() {
+  void _startScanning() async {
     if (!widget.isfromHome) {
       if (mounted) {
         setState(() => showScanning = true);
@@ -132,6 +135,16 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
         });
       } else if (isTabSelected == 2) {
         log('its request for identify mushroom');
+        int remaingquery = await QueryManager.getRemainingQueries();
+
+        if (remaingquery < 1) {
+          dev.log('query completed');
+          Fluttertoast.showToast(msg: 'Query Reached');
+
+          // Get.to((PlanteoProScreen()));
+
+          return;
+        } else {}
         _mushroomController.identifyMushroom(
           imagePath: cameraCtrl.selectedCaptureImagePath.value,
         );
@@ -414,6 +427,38 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
                                       GestureDetector(
+                                        onTap: () async {
+                                          log('message');
+
+                                          if (isTabSelected == 1) {
+                                            await cameraCtrl
+                                                .pickImageFromGallery(); // pehle capture
+                                            await cameraCtrl
+                                                .pauseCameraPreview();
+
+                                            // ⏳ small delay taake image list me insert ho jaye
+                                            await Future.delayed(
+                                              const Duration(milliseconds: 300),
+                                            );
+
+                                            _startScanning(); // ab safely call hoga
+                                          } else if (isTabSelected == 2) {
+                                            await cameraCtrl
+                                                .pickImageFromGallery(); // pehle capture
+                                            await cameraCtrl
+                                                .pauseCameraPreview();
+
+                                            // ⏳ small delay taake image list me insert ho jaye
+                                            await Future.delayed(
+                                              const Duration(milliseconds: 300),
+                                            );
+
+                                            _startScanning(); // ab safely call hoga
+                                          } else {
+                                            await cameraCtrl
+                                                .pickImageFromGallery(); // pehle capture
+                                          }
+                                        },
                                         child: Container(
                                           width: 42,
                                           height: 42,

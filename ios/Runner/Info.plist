@@ -14,10 +14,16 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleName</key>
 	<string>plantify</string>
+	
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+
+		<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-9804021071767799~7539120147</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

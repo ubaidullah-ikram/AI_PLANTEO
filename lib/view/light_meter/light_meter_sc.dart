@@ -98,7 +98,17 @@ class LightMeterScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: 30),
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40.0),
                 child: Text(
@@ -107,6 +117,7 @@ class LightMeterScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
+
               SizedBox(height: Get.height * 0.45),
               // Lux Reading Display
               Obx(

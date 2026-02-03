@@ -10,6 +10,7 @@ import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart'
 import 'package:plantify/view/light_meter/light_meter_sc.dart';
 import 'package:plantify/view/my_garden_view/my_garden_screen.dart';
 import 'package:plantify/view/plantio_expert_chat_sc/plant_chat_screen.dart';
+import 'package:plantify/view/pro_screen/pro_screen.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
 import 'package:plantify/view/setting_sc/setting_screen.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
@@ -70,33 +71,38 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [SvgPicture.asset(AppIcons.home_logo, height: 24)],
         ),
         actions: [
-          Container(
-            height: 30,
-            width: 94,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: AppColors.themeColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: SvgPicture.asset(
-                    color: Colors.white,
-                    AppIcons.pro_icon_white,
-                    height: 14,
+          GestureDetector(
+            onTap: () {
+              Get.to(() => PlanteoProScreen());
+            },
+            child: Container(
+              height: 30,
+              width: 94,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: AppColors.themeColor,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: SvgPicture.asset(
+                      color: Colors.white,
+                      AppIcons.pro_icon_white,
+                      height: 14,
+                    ),
                   ),
-                ),
-                SizedBox(width: 6),
-                Text(
-                  'Upgrade',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
+                  SizedBox(width: 6),
+                  Text(
+                    'Upgrade',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(width: 10),
@@ -115,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               SizedBox(height: 10),
-
+              // Text(RemoteConfigService().freeQueryConfig.freeLimit.toString()),
               // Image.asset(AppImages.home_first_tool),
               GestureDetector(
                 onTap: () {
@@ -194,6 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
               //   child: Text('data'),
               // ),
               SizedBox(height: 10),
+              // TextButton(
+              //   onPressed: () => throw Exception(),
+              //   child: const Text("Throw Test Exception"),
+              // ),
               supportToolCard(
                 "Identify Plants",
                 "Snap a photo and instantly discover the name, type, and details of any plant.",

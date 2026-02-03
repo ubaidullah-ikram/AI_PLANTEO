@@ -234,6 +234,7 @@ import 'package:get/get.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/services/notification_service.dart';
+import 'package:plantify/view/reminders_view/widgets/plants_view_for_reminder.dart';
 import 'package:plantify/view/reminders_view/widgets/remind_me_about.dart';
 import 'package:plantify/view/reminders_view/widgets/repeat_reminder_widget.dart';
 import 'package:plantify/view/reminders_view/widgets/time_selection.dart';
@@ -241,10 +242,15 @@ import 'package:plantify/view_model/alarm_reminder_controller/reminder_controlle
 
 class ReminderScreen extends StatefulWidget {
   bool isfromEdit;
+  bool isfromSavedPlant;
   int? editReminderId;
 
-  ReminderScreen({Key? key, required this.isfromEdit, this.editReminderId})
-    : super(key: key);
+  ReminderScreen({
+    Key? key,
+    required this.isfromEdit,
+    this.isfromSavedPlant = false,
+    this.editReminderId,
+  }) : super(key: key);
 
   @override
   State<ReminderScreen> createState() => _ReminderScreenState();
@@ -263,6 +269,14 @@ class _ReminderScreenState extends State<ReminderScreen> {
     if (widget.isfromEdit && widget.editReminderId != null) {
       _loadReminderForEdit(widget.editReminderId!);
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((s) {
+      if (widget.isfromSavedPlant) {
+        // controller.selectedPlant.value = 'Select';
+      } else {
+        controller.selectedPlant.value = 'Select';
+      }
+    });
   }
 
   void _loadReminderForEdit(int reminderId) {
@@ -326,12 +340,20 @@ class _ReminderScreenState extends State<ReminderScreen> {
                           ),
                         ),
                         Obx(
-                          () => Text(
-                            controller.selectedPlant.value,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textHeading,
-                              fontWeight: FontWeight.w600,
+                          () => GestureDetector(
+                            onTap: () {
+                              Get.to(() => PlantsViewForReminder());
+                            },
+                            child: Text(
+                              controller.selectedPlant.value,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color:
+                                    controller.selectedPlant.value == 'Select'
+                                    ? Colors.grey
+                                    : AppColors.textHeading,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),

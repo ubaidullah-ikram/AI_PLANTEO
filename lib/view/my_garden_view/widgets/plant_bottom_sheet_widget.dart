@@ -4,10 +4,18 @@ import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/view/reminders_view/reminder_view.dart';
+import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
+import 'package:plantify/view_model/my_garden_controller/my_garden_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class PlantBottomSheetWidget extends StatefulWidget {
-  const PlantBottomSheetWidget({super.key});
+  bool isfromPlant;
+  int index;
+  PlantBottomSheetWidget({
+    super.key,
+    required this.isfromPlant,
+    required this.index,
+  });
 
   @override
   State<PlantBottomSheetWidget> createState() => _PlantBottomSheetWidgetState();
@@ -27,29 +35,29 @@ class _PlantBottomSheetWidgetState extends State<PlantBottomSheetWidget> {
           children: [
             SizedBox(height: 10),
 
-            _buttonWidget(
-              onTap: () {
-                // Navigator.pop(context);
+            // _buttonWidget(
+            //   onTap: () {
+            //     // Navigator.pop(context);
 
-                Get.back();
-                showModalBottomSheet(
-                  backgroundColor: Color(0xffF9F9F9),
-                  context: context,
-                  builder: (_) => _renameBottomSheet(),
-                );
-              },
-              icon: AppIcons.edit_icon,
-              text: 'Rename',
-            ),
-            SizedBox(height: 8),
-            _buttonWidget(
-              onTap: () {
-                Get.back();
-                Get.to(() => ReminderScreen(isfromEdit: false));
-              },
-              icon: AppIcons.alarm_icon,
-              text: 'Add Reminder',
-            ),
+            //     Get.back();
+            //     showModalBottomSheet(
+            //       backgroundColor: Color(0xffF9F9F9),
+            //       context: context,
+            //       builder: (_) => _renameBottomSheet(),
+            //     );
+            //   },
+            //   icon: AppIcons.edit_icon,
+            //   text: 'Rename',
+            // ),
+            // SizedBox(height: 8),
+            // _buttonWidget(
+            //   onTap: () {
+            //     Get.back();
+            //     Get.to(() => ReminderScreen(isfromEdit: false));
+            //   },
+            //   icon: AppIcons.alarm_icon,
+            //   text: 'Add Reminder',
+            // ),
             SizedBox(height: 8),
 
             _buttonWidget(
@@ -58,7 +66,7 @@ class _PlantBottomSheetWidgetState extends State<PlantBottomSheetWidget> {
                 showDialog(
                   context: context,
                   builder: (context) {
-                    return _deleteAlert();
+                    return _deleteAlert(widget.isfromPlant, widget.index);
                   },
                 );
               },
@@ -229,7 +237,7 @@ class _PlantBottomSheetWidgetState extends State<PlantBottomSheetWidget> {
     );
   }
 
-  Widget _deleteAlert() {
+  Widget _deleteAlert(bool isfromPlant, int index) {
     return Dialog(
       child: Container(
         height: 220,
@@ -255,27 +263,37 @@ class _PlantBottomSheetWidgetState extends State<PlantBottomSheetWidget> {
               style: TextStyle(fontFamily: AppFonts.sfPro, fontSize: 14),
             ),
             SizedBox(height: 14),
-            Container(
-              height: 55,
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: AppColors.themeColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              width: double.infinity,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Delete',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                if (isfromPlant) {
+                  Get.find<MyGardenController>().deletePlant(index);
+                } else {
+                  Get.find<MyGardenController>().deleteMushroom(index);
+                }
+                Get.back();
+              },
+              child: Container(
+                height: 55,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.themeColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                width: double.infinity,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Delete',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

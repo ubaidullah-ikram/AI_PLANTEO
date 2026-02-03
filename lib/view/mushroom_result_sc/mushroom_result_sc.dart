@@ -233,6 +233,7 @@ class _MushroomIdentificationResultScreenState
                   ],
                 ),
               ),
+              SizedBox(height: 10),
               widget.isfromHistory == false
                   ? SizedBox(height: 16)
                   : SizedBox.shrink(),
@@ -284,7 +285,7 @@ class _MushroomIdentificationResultScreenState
                         ),
                       ),
                     ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               // Characteristics Card
               if (mushroomData.characteristics.isNotEmpty)
                 Container(

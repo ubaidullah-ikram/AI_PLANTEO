@@ -11,6 +11,7 @@ import 'package:plantify/models/mushroom_db_model.dart';
 import 'package:plantify/models/mushroom_model.dart';
 import 'package:plantify/models/plant_idenfier_model.dart';
 import 'package:plantify/models/plant_identify_db_model.dart';
+import 'package:plantify/models/reminder_model.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/identify_plant_view/identify_plant_result_sc.dart';
 import 'package:plantify/view/mushroom_result_sc/mushroom_result_sc.dart';
@@ -252,7 +253,10 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                                 padding: EdgeInsets.zero,
                                 itemCount: mushroom.length,
                                 itemBuilder: (context, index) {
-                                  return _buildMushroomWidget(mushroom[index]);
+                                  return _buildMushroomWidget(
+                                    mushroom[index],
+                                    index,
+                                  );
                                 },
                               );
                             }),
@@ -291,7 +295,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                                 padding: EdgeInsets.zero,
                                 itemCount: plants.length,
                                 itemBuilder: (context, index) {
-                                  return _plantcardWidget(plants[index]);
+                                  return _plantcardWidget(plants[index], index);
                                 },
                               );
                             }),
@@ -524,8 +528,8 @@ class _MyGardenScreenState extends State<MyGardenScreen>
           contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              AppImages.garden_image,
+            child: Image.memory(
+              reminder.image,
               width: 50,
               height: 50,
               fit: BoxFit.cover,
@@ -600,7 +604,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
   }
 
   // ============= PLANT CARD WIDGET =============
-  Widget _plantcardWidget(SavedPlantModel plant) {
+  Widget _plantcardWidget(SavedPlantModel plant, int index) {
     return Stack(
       children: [
         GestureDetector(
@@ -704,7 +708,8 @@ class _MyGardenScreenState extends State<MyGardenScreen>
               showModalBottomSheet(
                 backgroundColor: Color(0xffF9F9F9),
                 context: context,
-                builder: (_) => PlantBottomSheetWidget(),
+                builder: (_) =>
+                    PlantBottomSheetWidget(isfromPlant: true, index: index),
               );
             },
             icon: Icon(Icons.more_horiz, size: 24),
@@ -715,7 +720,14 @@ class _MyGardenScreenState extends State<MyGardenScreen>
           bottom: 9,
           child: GestureDetector(
             onTap: () {
-              mygardenController.selectFilter.value = 2;
+              // mygardenController.selectFilter.value = 2;
+              log('message');
+
+              reminderController.selectedPlant.value = plant.plantName;
+              reminderController.reminderImage = plant.image;
+              Get.to(
+                () => ReminderScreen(isfromEdit: false, isfromSavedPlant: true),
+              );
             },
             child: Container(
               height: 32,
@@ -749,7 +761,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
   }
 
   // ============= EMPTY WIDGET =============
-  Widget _buildMushroomWidget(SavedMushroomModel mushroom) {
+  Widget _buildMushroomWidget(SavedMushroomModel mushroom, int index) {
     return Stack(
       children: [
         GestureDetector(
@@ -824,25 +836,25 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                           color: AppColors.themeColor,
                           fontWeight: FontWeight.w600,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        "${mushroom.mushroomName}",
+                        "${mushroom.description}",
                         style: TextStyle(
                           fontFamily: AppFonts.sfPro,
                           fontSize: 12,
                           color: Colors.grey,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 4),
-                      Divider(
-                        height: 1,
-                        color: Color(0xffE6E6E6),
-                        thickness: 1,
-                      ),
+                      // Divider(
+                      //   height: 1,
+                      //   color: Color(0xffE6E6E6),
+                      //   thickness: 1,
+                      // ),
                     ],
                   ),
                 ),
@@ -860,46 +872,48 @@ class _MyGardenScreenState extends State<MyGardenScreen>
               showModalBottomSheet(
                 backgroundColor: Color(0xffF9F9F9),
                 context: context,
-                builder: (_) => PlantBottomSheetWidget(),
+                builder: (_) =>
+                    PlantBottomSheetWidget(isfromPlant: false, index: index),
               );
             },
             icon: Icon(Icons.more_horiz, size: 24),
           ),
         ),
-        Positioned(
-          right: 12,
-          bottom: 9,
-          child: GestureDetector(
-            onTap: () {
-              mygardenController.selectFilter.value = 2;
-            },
-            child: Container(
-              height: 32,
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColors.themeColor.withOpacity(0.5),
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(AppIcons.clock, width: 14, height: 14),
-                  SizedBox(width: 6),
-                  Text(
-                    'Add Reminder',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.themeColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+
+        // Positioned(
+        //   right: 12,
+        //   bottom: 9,
+        //   child: GestureDetector(
+        //     onTap: () {
+        //       mygardenController.selectFilter.value = 2;
+        //     },
+        //     child: Container(
+        //       height: 32,
+        //       padding: EdgeInsets.symmetric(horizontal: 12),
+        //       decoration: BoxDecoration(
+        //         border: Border.all(
+        //           color: AppColors.themeColor.withOpacity(0.5),
+        //         ),
+        //         borderRadius: BorderRadius.circular(8),
+        //       ),
+        //       child: Row(
+        //         mainAxisSize: MainAxisSize.min,
+        //         children: [
+        //           SvgPicture.asset(AppIcons.clock, width: 14, height: 14),
+        //           SizedBox(width: 6),
+        //           Text(
+        //             'Add Reminder',
+        //             style: TextStyle(
+        //               fontSize: 10,
+        //               fontWeight: FontWeight.w700,
+        //               color: AppColors.themeColor,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
 

@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:plantify/models/chat_model.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'package:plantify/services/remote_config_service.dart';
 
 class PlantExpertChatController extends GetxController {
@@ -77,6 +78,7 @@ class PlantExpertChatController extends GetxController {
         if (text != null) {
           // ✅ ONLY add AI response here
           addMessage(ChatMessage(text: text, isUser: false, time: ''));
+          QueryManager.useQuery();
           return text;
         } else {
           return "❌ Could not understand the response.";

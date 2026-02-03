@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plantify/models/mushroom_model.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'dart:developer' as dev;
 
 import 'package:plantify/services/remote_config_service.dart';
@@ -157,7 +158,7 @@ class MushroomIdentificationController extends GetxController {
         }
 
         dev.log('📝 Raw Response: $text');
-
+        QueryManager.useQuery();
         // Parse JSON from response
         final parsedJson = _parseJsonResponse(text);
         return parsedJson;

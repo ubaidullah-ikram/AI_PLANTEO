@@ -4,7 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:developer';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:plantify/view_model/api_controller/api_controller.dart';
 
 class CustomCamerController extends GetxController {
@@ -60,6 +60,24 @@ class CustomCamerController extends GetxController {
       log('Camera initialization error: $e');
       isCameraInitialized.value = false;
     }
+  }
+
+  final ImagePicker _picker = ImagePicker();
+  Future<void> pickImageFromGallery() async {
+    log('pick from gallery');
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image == null) return;
+
+    final bytes = await File(image.path).readAsBytes();
+
+    // capturedImages.clear();
+    capturedImages.add(bytes);
+    selectedCaptureImagePath.value = image.path;
+    Get.find<DiagnoseApiController>().temImage = bytes;
   }
 
   Future<void> captureImage() async {

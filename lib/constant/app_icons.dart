@@ -9,6 +9,7 @@ class AppIcons {
   static const identify_mushrooms = "${baseUrl}identify_mushrooms.svg";
   static const identify_plant = "${baseUrl}identify_plant.svg";
   static const intermediate = "${baseUrl}intermediate.svg";
+  static const proScreengif = "${baseUrl}animation.gif";
   static const keep_them_alive = "${baseUrl}keep_them_alive.svg";
   static const diagnose_plants = "${baseUrl}diagnose_plants.svg";
   static const managing_pests = "${baseUrl}managing_pests.svg";
@@ -40,6 +41,8 @@ class AppIcons {
   static const care_tips = "${baseUrl}care_tips.svg";
   static const treatment = "${baseUrl}treatment.svg";
   static const temperature = "${baseUrl}temperature.svg";
+  static const no_payment = "${baseUrl}no_payment.png";
+  static const small_pro = "${baseUrl}small_pro.png";
   static const pests = "${baseUrl}pests.svg";
   static const reporting = "${baseUrl}reporting.svg";
   static const error_lightMeter = "${baseUrl}error_lightMeter.svg";

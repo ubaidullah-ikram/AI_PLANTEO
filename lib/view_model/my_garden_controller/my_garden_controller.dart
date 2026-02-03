@@ -55,6 +55,13 @@ class MyGardenController extends GetxController {
   void deleteMushroom(int index) {
     mushrooms.removeAt(index);
     box.write('my_mushrooms', mushrooms.map((e) => e.toJson()).toList());
+    loadMushrooms();
+  }
+
+  void deletePlant(int index) {
+    plants.removeAt(index);
+    box.write('my_plants', plants.map((e) => e.toJson()).toList());
+    loadPlants();
   }
 
   final selectFilter = 0.obs;

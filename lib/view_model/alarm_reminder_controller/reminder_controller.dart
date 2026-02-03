@@ -40,71 +40,12 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_icons.dart';
+import 'package:plantify/models/reminder_model.dart';
 import 'package:plantify/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// ============= REMINDER MODEL =============
-class ReminderModel {
-  final int id;
-  final String plantName;
-  final String reminderType;
-  final String reminderIcon;
-  final int hour;
-  final int minute;
-  final String period;
-  final int repeatEvery;
-  final String repeatUnit;
-  final DateTime createdDate;
-  final bool isActive;
-
-  ReminderModel({
-    required this.id,
-    required this.plantName,
-    required this.reminderType,
-    required this.reminderIcon,
-    required this.hour,
-    required this.minute,
-    required this.period,
-    required this.repeatEvery,
-    required this.repeatUnit,
-    required this.createdDate,
-    this.isActive = true,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'plantName': plantName,
-      'reminderType': reminderType,
-      'reminderIcon': reminderIcon,
-      'hour': hour,
-      'minute': minute,
-      'period': period,
-      'repeatEvery': repeatEvery,
-      'repeatUnit': repeatUnit,
-      'createdDate': createdDate.toIso8601String(),
-      'isActive': isActive,
-    };
-  }
-
-  factory ReminderModel.fromJson(Map<String, dynamic> json) {
-    return ReminderModel(
-      id: json['id'] as int,
-      plantName: json['plantName'] as String,
-      reminderType: json['reminderType'] as String,
-      reminderIcon: json['reminderIcon'] as String,
-      hour: json['hour'] as int,
-      minute: json['minute'] as int,
-      period: json['period'] as String,
-      repeatEvery: json['repeatEvery'] as int,
-      repeatUnit: json['repeatUnit'] as String,
-      createdDate: DateTime.parse(json['createdDate'] as String),
-      isActive: json['isActive'] as bool? ?? true,
-    );
-  }
-}
 
 // ============= REMINDER CONTROLLER =============
 class ReminderController extends GetxController {
@@ -118,7 +59,7 @@ class ReminderController extends GetxController {
   final expand_timer_card = true.obs;
 
   // Selected Values
-  RxString selectedPlant = 'Watermeal'.obs;
+  RxString selectedPlant = 'Select'.obs;
   RxInt selectedHour = 7.obs;
   RxInt selectedMinute = 0.obs;
   RxString period = "AM".obs;
@@ -128,6 +69,7 @@ class ReminderController extends GetxController {
   final selectedRepeaseDayIndex = 0.obs;
   final repeatDays = 7.obs;
   final selectedReminder = 'Select'.obs;
+  Uint8List reminderImage = Uint8List(0);
   final selectedRepeat = ''.obs;
   final selectedIcon = AppIcons.misting.obs;
 
@@ -179,6 +121,7 @@ class ReminderController extends GetxController {
       final reminder = ReminderModel(
         id: isEdit ? editId! : nextReminderId.value,
         plantName: selectedPlant.value,
+        image: reminderImage,
         reminderType: selectedReminder.value,
         reminderIcon: selectedIcon.value,
         hour: selectedHour.value,
@@ -361,6 +304,7 @@ class ReminderController extends GetxController {
         ReminderModel updated = ReminderModel(
           id: reminder.id,
           plantName: reminder.plantName,
+          image: reminderImage,
           reminderType: reminder.reminderType,
           reminderIcon: reminder.reminderIcon,
           hour: reminder.hour,
@@ -386,7 +330,7 @@ class ReminderController extends GetxController {
 
   // ============= RESET FORM =============
   void resetForm() {
-    selectedPlant.value = 'Watermeal';
+    selectedPlant.value = 'Select';
     selectedHour.value = 7;
     selectedMinute.value = 0;
     period.value = 'AM';

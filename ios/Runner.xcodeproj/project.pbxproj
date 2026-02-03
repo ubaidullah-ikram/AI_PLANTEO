@@ -495,12 +495,13 @@
 				DEVELOPMENT_TEAM = N84TSN542Q;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Planteo;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.disease.diagnose.garden.care.reminder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.mushroom.disease.diagnose.garden.care.reminder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -679,12 +680,13 @@
 				DEVELOPMENT_TEAM = N84TSN542Q;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Planteo;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.disease.diagnose.garden.care.reminder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.mushroom.disease.diagnose.garden.care.reminder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -703,12 +705,13 @@
 				DEVELOPMENT_TEAM = N84TSN542Q;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Planteo;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.disease.diagnose.garden.care.reminder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.planteo.ai.plant.identifier.scanner.mushroom.disease.diagnose.garden.care.reminder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

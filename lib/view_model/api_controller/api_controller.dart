@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
@@ -7,11 +8,13 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plantify/models/diagnose_model.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'dart:developer' as dev;
 
 import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/diagnose_view/widgets/diagnose_result_screen.dart';
+import 'package:plantify/view/pro_screen/pro_screen.dart';
 
 // ============ Main Controller ============
 
@@ -51,7 +54,14 @@ class DiagnoseApiController extends GetxController {
       dev.log(
         '🌡️ Environment Data: Watering=${environmentData.wateringFrequency}, Light=${environmentData.lightCondition}, Humidity=${environmentData.humidity}, Temp=${environmentData.temperature}',
       );
+      int remaingquery = await QueryManager.getRemainingQueries();
 
+      if (remaingquery < 1) {
+        log('query completed');
+        Fluttertoast.showToast(msg: 'Query Reached');
+
+        return;
+      } else {}
       Get.off(
         () => DiagnosePlantScreen(isfromHome: false, isfromIdentify: false),
       );
@@ -171,7 +181,8 @@ class DiagnoseApiController extends GetxController {
           throw Exception('No response text from API');
         }
 
-        dev.log('📝 Raw Response: $text');
+        QueryManager.useQuery();
+        // dev.log('📝 Raw Response: $text');
 
         // Parse JSON from response
         final parsedJson = _parseJsonResponse(text);

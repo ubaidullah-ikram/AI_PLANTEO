@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plantify/models/plant_idenfier_model.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'dart:developer' as dev;
 
 import 'package:plantify/services/remote_config_service.dart';
@@ -54,6 +55,16 @@ class PlantIdentifierController extends GetxController {
       //   () => DiagnosePlantScreen(isfromHome: false, isfromIdentify: false),
       // );
       // Call Gemini API
+      int remaingquery = await QueryManager.getRemainingQueries();
+
+      if (remaingquery < 1) {
+        dev.log('query completed');
+        Fluttertoast.showToast(msg: 'Query Reached');
+        Get.back();
+        // Get.to((PlanteoProScreen()));
+
+        return;
+      } else {}
       final response = await _callGeminiAPI(imageBase64: imageBase64);
 
       dev.log('✅ API Response received');
@@ -169,7 +180,7 @@ class PlantIdentifierController extends GetxController {
         }
 
         dev.log('📝 Raw Response: $text');
-
+        QueryManager.useQuery();
         // Parse JSON from response
         final parsedJson = _parseJsonResponse(text);
         return parsedJson;
