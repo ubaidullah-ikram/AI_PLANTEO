@@ -43,6 +43,38 @@ class QueryManager {
     log('QueryManager → Queries updated successfully');
   }
 
+  /// Downgrade user to FREE plan queries (when PRO expires)
+  /// Downgrade user to FREE plan (only if already initialized)
+  static Future<void> downgradeToFreeIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    log('QueryManager → downgradeToFreeIfNeeded() called');
+
+    final isInstalled = prefs.getBool(_installedKey) ?? false;
+
+    // agar first launch hy toh yeh fn kuch na kry
+    if (!isInstalled) {
+      log('QueryManager → User not initialized yet → skipping downgrade');
+      return;
+    }
+
+    final currentQueries = prefs.getInt(_queryKey);
+
+    // agar queries already set hain toh overwrite na kro
+    if (currentQueries != null) {
+      log('QueryManager → Queries already exist = $currentQueries');
+      log('QueryManager → No reset required');
+      return;
+    }
+
+    final freeQueries = RemoteConfigService().freeQueryConfig.freeLimit;
+
+    await prefs.setInt(_queryKey, freeQueries);
+
+    log('QueryManager → User downgraded to FREE');
+    log('QueryManager → Free queries assigned = $freeQueries');
+  }
+
   /// Get remaining queries
   static Future<int> getRemainingQueries() async {
     final prefs = await SharedPreferences.getInstance();

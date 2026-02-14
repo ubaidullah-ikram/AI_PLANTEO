@@ -499,7 +499,8 @@ class _ReminderScreenState extends State<ReminderScreen> {
     try {
       // controller.clearAllReminders();
       // return;
-      if (controller.selectedReminder.value == 'Select' ||
+      if (controller.selectedPlant.value == 'Select' ||
+          controller.selectedReminder.value == 'Select' ||
           controller.selectedRepeat.value.isEmpty) {
         Get.snackbar('Error', 'Please fill all required fields');
         return;
@@ -580,6 +581,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
       await controller.deleteReminder(widget.editReminderId!);
       await NotificationService.instance.cancel(widget.editReminderId!);
 
+      Get.snackbar('Success', 'Reminder deleted');
       Get.back();
     } catch (e) {
       log('Error deleting reminder: $e');

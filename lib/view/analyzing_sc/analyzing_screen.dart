@@ -34,6 +34,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setUserSession();
+
         Get.to(() => HomeScreen());
       }
     });
@@ -41,7 +42,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen>
 
   setUserSession() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    await sp.setBool('isLoginUser', true);
+    await sp.setBool('isInitialized', true);
   }
 
   @override

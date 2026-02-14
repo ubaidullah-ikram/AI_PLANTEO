@@ -2,12 +2,12 @@ import 'dart:convert';
 
 class FreeQueryConfig {
   final int freeLimit;
-  final int monthly;
+  final int weekly;
   final int yearly;
 
   FreeQueryConfig({
     required this.freeLimit,
-    required this.monthly,
+    required this.weekly,
     required this.yearly,
   });
 
@@ -15,7 +15,7 @@ class FreeQueryConfig {
     return FreeQueryConfig(
       freeLimit: json['free_plan'] ?? 0,
 
-      monthly: json['monthly_plan'] ?? 0,
+      weekly: json['weekly_plan'] ?? 0,
       yearly: json['yearly_plan'] ?? 0,
     );
   }

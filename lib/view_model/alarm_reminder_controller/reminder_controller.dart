@@ -114,7 +114,7 @@ class ReminderController extends GetxController {
       if (selectedPlant.value.isEmpty ||
           selectedReminder.value == 'Select' ||
           selectedRepeat.value.isEmpty) {
-        Get.snackbar('Error', 'Please fill all required fields');
+        // Get.snackbar('Error', 'Please fill all required fields');
         return;
       }
       log('the id ${isEdit ? editId! : nextReminderId.value}');
@@ -286,7 +286,6 @@ class ReminderController extends GetxController {
       // TODO: Cancel notification
       // await NotificationService.instance.cancel(reminderId);
 
-      Get.snackbar('Success', 'Reminder deleted');
       print('🗑️ Reminder deleted: $reminderId');
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete reminder: $e');
@@ -304,7 +303,7 @@ class ReminderController extends GetxController {
         ReminderModel updated = ReminderModel(
           id: reminder.id,
           plantName: reminder.plantName,
-          image: reminderImage,
+          image: reminder.image,
           reminderType: reminder.reminderType,
           reminderIcon: reminder.reminderIcon,
           hour: reminder.hour,

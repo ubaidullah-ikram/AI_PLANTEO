@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:plantify/services/query_manager_services.dart';
+import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/services/revnue_cat_services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,9 +85,6 @@ class ProScreenController extends GetxController {
   }
 
   Future<void> checkProStatus() async {
-    // isUserPro.value = true;
-    // var sp=await SharedPreferences.getInstance();
-    // await sp.remove('remaining_queries');
     isUserPro.value = await RevenueCatHelper().checkSubscriptionStatus();
     log('✅ Pro Status Check: ${isUserPro.value}');
   }
@@ -202,9 +201,6 @@ class MyPurchaseCallbacks implements InAppCallback {
     await prefs.setBool('is_user_pro', true);
     controller.isUserPro.value = true;
 
-    // ✅ 2. Remove free queries limit
-    await prefs.remove('remaining_queries');
-
     // ✅ 3. Assign initial credits based on plan
     try {
       CustomerInfo customerInfo = await Purchases.getCustomerInfo();
@@ -215,17 +211,13 @@ class MyPurchaseCallbacks implements InAppCallback {
         String productId = entitlement.productIdentifier;
         int credits = 0;
 
-        if (productId == "ai_story_weekly") {
-          credits = 30000;
-        } else if (productId == "ai_story_monthly") {
-          credits = 30000;
-        } else if (productId == "ai_story_yearly") {
-          credits = 30000;
+        if (productId == "planteo_weekly_plan") {
+          credits = RemoteConfigService().freeQueryConfig.weekly;
+        } else if (productId == "planteo_yearly_plan") {
+          credits = RemoteConfigService().freeQueryConfig.yearly;
         }
 
-        // await prefs.setInt('remaining_queries', credits);
-        log('🎁 Initial credits assigned: $credits for plan: $productId');
-
+        await QueryManager.setQueries(credits);
         // ✅ Save expiration date
         final expirationDate = entitlement.expirationDate;
         if (expirationDate != null) {
@@ -257,8 +249,30 @@ class MyPurchaseCallbacks implements InAppCallback {
     await prefs.setBool('is_user_pro', true);
     controller.isUserPro.value = true;
 
-    await prefs.remove('remaining_queries');
+    CustomerInfo customerInfo = await Purchases.getCustomerInfo();
+    EntitlementInfo? entitlement =
+        customerInfo.entitlements.all[RevenueCatHelper.entitlementIdentifier];
 
+    if (entitlement != null && entitlement.isActive) {
+      String productId = entitlement.productIdentifier;
+      int credits = 0;
+      log('restore ${productId}');
+      if (productId == "planteo_weekly_plan") {
+        credits = RemoteConfigService().freeQueryConfig.weekly;
+      } else if (productId == "planteo_yearly_plan") {
+        credits = RemoteConfigService().freeQueryConfig.yearly;
+      }
+
+      await QueryManager.setQueries(credits);
+      // ✅ Save expiration date
+      final expirationDate = entitlement.expirationDate;
+      if (expirationDate != null) {
+        await prefs.setString(
+          'last_expiration_date',
+          DateTime.parse(expirationDate).toIso8601String(),
+        );
+      }
+    }
     Fluttertoast.showToast(msg: 'Purchase restored successfully');
 
     Future.delayed(Duration(milliseconds: 500), () {

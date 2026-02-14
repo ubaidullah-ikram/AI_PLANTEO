@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:plantify/services/query_manager_services.dart';
+import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/view_model/pro_screen_controller/pro_screen_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -40,11 +42,13 @@ class RevenueCatHelper {
     PurchasesConfiguration? configuration;
     if (Platform.isAndroid) {
       configuration = PurchasesConfiguration(
-        "goog_XeBGUinGEWwNszNoMANmdZClNth",
+        "goog_enuEZKvruyOoNfvVwtqDPdpCbYK",
+        // "goog_XeBGUinGEWwNszNoMANmdZClNth",
       );
     } else if (Platform.isIOS) {
       configuration = PurchasesConfiguration(
-        "appl_ybVsLEvXIGhiZYQllokuvpqLvpV",
+        "appl_hfIoddENVJYiSIAmzkYMRmtKXZK",
+        // "appl_ybVsLEvXIGhiZYQllokuvpqLvpV",
       );
     }
     if (configuration != null) {
@@ -320,20 +324,13 @@ class RevenueCatHelper {
   Future<void> _assignCreditsOnRenewal(String productId) async {
     int credits = 0;
 
-    // ✅ Updated product IDs with proper format
-    if (productId == "ai_story_weekly") {
-      credits = 30000;
-    } else if (productId == "ai_story_monthly") {
-      credits = 30000;
-    } else if (productId == "ai_story_monthly") {
-      credits = 30000;
+    if (productId == "planteo_weekly_plan") {
+      credits = RemoteConfigService().freeQueryConfig.weekly;
+    } else if (productId == "planteo_yearly_plan") {
+      credits = RemoteConfigService().freeQueryConfig.yearly;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    // await prefs.setInt('remaining_queries', credits);
-
-    await prefs.remove('remaining_queries');
-
+    await QueryManager.setQueries(credits);
     log('🎁 Credits assigned on renewal: $credits');
   }
 }

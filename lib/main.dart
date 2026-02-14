@@ -9,6 +9,7 @@ import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/firebase_options.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/services/notification_service.dart';
+import 'package:plantify/services/query_manager_services.dart';
 import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/services/revnue_cat_services.dart';
 import 'package:plantify/view/splash_view/splash_sc.dart';
@@ -32,7 +33,11 @@ void main() async {
     log('error while in revnue cat');
   }
   Get.put(ProScreenController());
-  RemoteConfigService().init();
+  try {
+    await RemoteConfigService().init();
+  } catch (e) {}
+
+  QueryManager.initialize();
   runApp(
     DevicePreview(
       enabled: false,

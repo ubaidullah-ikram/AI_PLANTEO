@@ -28,7 +28,7 @@ class AppIcons {
   static const send_icon = "${baseUrl}send_icon.svg";
   static const watering = "${baseUrl}watering.svg";
   static const misting = "${baseUrl}misting.svg";
-  static const rotating = "${baseUrl}contrast.svg";
+  static const rotating = "${baseUrl}rotate.svg";
   static const clock = "${baseUrl}clock.svg";
   static const delete_icon = "${baseUrl}delete_icon.svg";
   static const alarm_icon = "${baseUrl}alarm_icon.svg";

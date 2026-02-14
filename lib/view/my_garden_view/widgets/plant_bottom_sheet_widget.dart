@@ -35,29 +35,6 @@ class _PlantBottomSheetWidgetState extends State<PlantBottomSheetWidget> {
           children: [
             SizedBox(height: 10),
 
-            // _buttonWidget(
-            //   onTap: () {
-            //     // Navigator.pop(context);
-
-            //     Get.back();
-            //     showModalBottomSheet(
-            //       backgroundColor: Color(0xffF9F9F9),
-            //       context: context,
-            //       builder: (_) => _renameBottomSheet(),
-            //     );
-            //   },
-            //   icon: AppIcons.edit_icon,
-            //   text: 'Rename',
-            // ),
-            // SizedBox(height: 8),
-            // _buttonWidget(
-            //   onTap: () {
-            //     Get.back();
-            //     Get.to(() => ReminderScreen(isfromEdit: false));
-            //   },
-            //   icon: AppIcons.alarm_icon,
-            //   text: 'Add Reminder',
-            // ),
             SizedBox(height: 8),
 
             _buttonWidget(

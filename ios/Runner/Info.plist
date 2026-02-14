@@ -23,7 +23,7 @@
 	<string>APPL</string>
 
 		<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-9804021071767799~7539120147</string>
+	<string>ca-app-pub-9804021071767799~9917797437</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

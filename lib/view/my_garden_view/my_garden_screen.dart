@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_fonts.dart';
 import 'package:plantify/constant/app_icons.dart';
@@ -12,6 +13,8 @@ import 'package:plantify/models/mushroom_model.dart';
 import 'package:plantify/models/plant_idenfier_model.dart';
 import 'package:plantify/models/plant_identify_db_model.dart';
 import 'package:plantify/models/reminder_model.dart';
+import 'package:plantify/services/admanager_services.dart';
+import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/view/diagnose_view/daignose_screen_camera.dart';
 import 'package:plantify/view/identify_plant_view/identify_plant_result_sc.dart';
 import 'package:plantify/view/mushroom_result_sc/mushroom_result_sc.dart';
@@ -21,6 +24,7 @@ import 'package:plantify/view_model/alarm_reminder_controller/reminder_controlle
 import 'package:plantify/view_model/identify_plant_controller/identify_plant_controller.dart';
 import 'package:plantify/view_model/mushroom_controller/mushroom_controller.dart';
 import 'package:plantify/view_model/my_garden_controller/my_garden_controller.dart';
+import 'package:plantify/view_model/pro_screen_controller/pro_screen_controller.dart';
 import 'package:svg_flutter/svg_flutter.dart';
 
 class MyGardenScreen extends StatefulWidget {
@@ -60,6 +64,8 @@ class _MyGardenScreenState extends State<MyGardenScreen>
   @override
   void dispose() {
     _controller.dispose();
+
+    AdManager.disposeBanner(bannerAd);
     super.dispose();
   }
 
@@ -75,6 +81,54 @@ class _MyGardenScreenState extends State<MyGardenScreen>
     }
 
     return grouped;
+  }
+
+  bool _isAdInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_isAdInitialized) {
+      if (RemoteConfigService().banner_ads_for_IOS ||
+          RemoteConfigService().banner_ads_for_android) {
+        if (!Get.find<ProScreenController>().isUserPro.value) {
+          _loadBannerAd();
+        }
+      }
+      _isAdInitialized = true;
+    }
+  }
+
+  BannerAd? bannerAd;
+
+  bool isBannerAdLoaded = false;
+  void _loadBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+    bannerAd = BannerAd(
+      adUnitId: AdIds.bannerAdIdId,
+      size: size ?? AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          debugPrint("✅ Banner Loaded");
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint("❌ Banner Failed: $error");
+          setState(() {
+            isBannerAdLoaded = false;
+          });
+        },
+      ),
+    );
+    bannerAd!.load();
   }
 
   // Get icon for reminder type
@@ -94,6 +148,24 @@ class _MyGardenScreenState extends State<MyGardenScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // bottomNavigationBar: isBannerAdLoaded
+      //     ? SizedBox(
+      //         width: bannerAd!.size.width.toDouble(),
+      //         height: bannerAd!.size.height.toDouble(),
+      //         child: AdWidget(ad: bannerAd!),
+      //       )
+      //     : SizedBox(),
+      bottomNavigationBar: Obx(
+        () => mygardenController.plants.isNotEmpty
+            ? isBannerAdLoaded
+                  ? SizedBox(
+                      width: bannerAd!.size.width.toDouble(),
+                      height: bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: bannerAd!),
+                    )
+                  : SizedBox()
+            : SizedBox.shrink(),
+      ),
       backgroundColor: Color(0xffF9F9F9),
       appBar: AppBar(
         leading: GestureDetector(
@@ -194,11 +266,12 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                                       Text(
                                         'No mushroom added yet',
                                         style: TextStyle(
-                                          fontFamily: AppFonts.sfPro,
-                                          fontSize: 14,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.grey,
                                         ),
                                       ),
+                                      SizedBox(height: 10),
                                       GestureDetector(
                                         onTap: () {
                                           Get.to(
@@ -281,9 +354,68 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                                       Text(
                                         'No plants added yet',
                                         style: TextStyle(
-                                          fontFamily: AppFonts.sfPro,
-                                          fontSize: 14,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.grey,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (mygardenController
+                                                  .selectFilter
+                                                  .value ==
+                                              0) {
+                                            Get.to(
+                                              () => DiagnosePlantScreen(
+                                                isfromHome: true,
+                                                isfromIdentify: true,
+                                              ),
+                                            );
+                                          } else {
+                                            Get.to(
+                                              () => ReminderScreen(
+                                                isfromEdit: false,
+                                              ),
+                                            )?.then((_) {
+                                              reminderController
+                                                  .loadAllReminders();
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                            vertical: 6,
+                                          ),
+                                          height: 54,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.themeColor,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Add Plant',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white,
+                                                  fontFamily: 'SFPRO',
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -304,52 +436,54 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                 ],
               ),
             ),
-            SafeArea(
-              child: Obx(
-                () => mygardenController.selectFilter.value == 1
-                    ? SizedBox.shrink()
-                    : GestureDetector(
-                        onTap: () {
-                          if (mygardenController.selectFilter.value == 0) {
-                            log('add plant pressed');
-                          } else {
-                            Get.to(
-                              () => ReminderScreen(isfromEdit: false),
-                            )?.then((_) {
-                              reminderController.loadAllReminders();
-                            });
-                          }
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 6),
-                          height: 54,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.themeColor,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add, color: Colors.white, size: 18),
-                              SizedBox(width: 4),
-                              Text(
-                                mygardenController.selectFilter.value == 0
-                                    ? "Add Plant"
-                                    : 'Add Reminder',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontFamily: 'SFPRO',
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-              ),
-            ),
+
+            // SafeArea(
+            //   child: Obx(
+            //     () => mygardenController.selectFilter.value == 1
+            //         ? SizedBox.shrink()
+            //         : GestureDetector(
+            //             onTap: () {
+            //               if (mygardenController.selectFilter.value == 0) {
+            //                 log('add plant pressed');
+            //               } else {
+            //                 Get.to(
+            //                   () => ReminderScreen(isfromEdit: false),
+            //                 )?.then((_) {
+            //                   reminderController.loadAllReminders();
+            //                 });
+            //               }
+            //             },
+            //             child: Container(
+            //               margin: EdgeInsets.symmetric(vertical: 6),
+            //               height: 54,
+            //               width: double.infinity,
+            //               decoration: BoxDecoration(
+            //                 color: AppColors.themeColor,
+            //                 borderRadius: BorderRadius.circular(16),
+            //               ),
+            //               child: Row(
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 children: [
+            //                   Icon(Icons.add, color: Colors.white, size: 18),
+            //                   SizedBox(width: 4),
+            //                   Text(
+            //                     mygardenController.selectFilter.value == 0
+            //                         ? "Add Plant"
+            //                         : 'Add Reminder',
+            //                     style: TextStyle(
+            //                       fontSize: 16,
+            //                       color: Colors.white,
+            //                       fontFamily: 'SFPRO',
+            //                       fontWeight: FontWeight.w800,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ),
+            //   ),
+            // ),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -376,12 +510,51 @@ class _MyGardenScreenState extends State<MyGardenScreen>
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.themeColor,
+                    color: Colors.grey,
                   ),
                 ),
-                Text(
-                  'Add a reminder to get started',
-                  style: TextStyle(fontSize: 14, color: Color(0xff797979)),
+                // Text(
+                //   'Add a reminder to get started',
+                //   style: TextStyle(fontSize: 14, color: Color(0xff797979)),
+                // ),
+                SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () {
+                    if (mygardenController.selectFilter.value == 0) {
+                      log('add plant pressed');
+                    } else {
+                      Get.to(() => ReminderScreen(isfromEdit: false))?.then((
+                        _,
+                      ) {
+                        reminderController.loadAllReminders();
+                      });
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    height: 54,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.themeColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add, color: Colors.white, size: 18),
+                        SizedBox(width: 4),
+                        Text(
+                          'Add Reminder',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontFamily: 'SFPRO',
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -517,13 +690,13 @@ class _MyGardenScreenState extends State<MyGardenScreen>
       children: [
         ListTile(
           onTap: () {
-            Get.to(
-              () =>
-                  ReminderScreen(isfromEdit: true, editReminderId: reminder.id),
-            )?.then((_) {
-              reminderController.loadAllReminders();
-              setState(() {});
-            });
+            // Get.to(
+            //   () =>
+            //       ReminderScreen(isfromEdit: true, editReminderId: reminder.id),
+            // )?.then((_) {
+            //   reminderController.loadAllReminders();
+            //   setState(() {});
+            // });
           },
           contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
           leading: ClipRRect(
@@ -548,6 +721,7 @@ class _MyGardenScreenState extends State<MyGardenScreen>
             style: TextStyle(color: Color(0xffA2ABA8), fontSize: 12),
           ),
           trailing: PopupMenuButton(
+            color: Colors.white,
             onSelected: (value) async {
               if (value == 'delete') {
                 // Delete confirmation

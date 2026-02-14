@@ -25,6 +25,36 @@ class CustomCamerController extends GetxController {
     super.onInit();
   }
 
+  Future<void> switchCamera() async {
+    try {
+      if (cameras == null || cameras!.length < 2) {
+        log('No secondary camera found');
+        return;
+      }
+
+      _currentCameraIndex = _currentCameraIndex == 0 ? 1 : 0;
+
+      isCameraInitialized.value = false;
+
+      await controller?.dispose();
+
+      controller = CameraController(
+        cameras![_currentCameraIndex],
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
+
+      await controller!.initialize();
+
+      isCameraInitialized.value = true;
+
+      log('Camera switched to index $_currentCameraIndex');
+    } catch (e) {
+      log('Error switching camera: $e');
+    }
+  }
+
+  int _currentCameraIndex = 0;
   Future<void> initializeCamera() async {
     try {
       log('Starting camera initialization...');
@@ -42,7 +72,7 @@ class CustomCamerController extends GetxController {
 
       if (cameras != null && cameras!.isNotEmpty) {
         controller = CameraController(
-          cameras![0],
+          cameras![_currentCameraIndex],
           ResolutionPreset.medium,
           enableAudio: false,
         );

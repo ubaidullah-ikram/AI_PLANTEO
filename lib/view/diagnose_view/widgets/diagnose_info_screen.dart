@@ -123,9 +123,9 @@ class _DiagnoseInfoScreenState extends State<DiagnoseInfoScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: _previousScreen,
-                    child: Icon(
+                  IconButton(
+                    onPressed: _previousScreen,
+                    icon: Icon(
                       Icons.chevron_left,
                       size: 28,
                       color: Colors.black,

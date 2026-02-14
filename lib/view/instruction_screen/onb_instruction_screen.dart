@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:plantify/constant/app_colors.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
+import 'package:plantify/services/admanager_services.dart';
+import 'package:plantify/services/remote_config_service.dart';
 import 'package:plantify/view/analyzing_sc/analyzing_screen.dart';
 import 'package:plantify/view_model/onb_instruction_controller/onb_instruction_controller.dart';
+import 'package:plantify/view_model/pro_screen_controller/pro_screen_controller.dart';
 import 'package:svg_flutter/svg.dart';
 
 class InstructionScreens extends StatefulWidget {
@@ -20,9 +24,40 @@ class _InstructionScreensState extends State<InstructionScreens>
   late Animation<double> _fadeAnimation;
   var instructionController = Get.put(OnbInstructionController());
   int _currentIndex = 0;
+  bool isBannerAdLoaded = false;
+  bool inbannerForBottom = false;
 
+  // ✅ Har controller ki apni banner ad
+  BannerAd? bannerAd;
   // Har screen ke liye selected options store karne ke liye
   Map<int, Set<int>> _selectedOptions = {};
+  void _loadBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+    bannerAd = BannerAd(
+      adUnitId: AdIds.bannerAdIdId,
+      size: size ?? AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          debugPrint("✅ Banner Loaded");
+          setState(() {
+            isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint("❌ Banner Failed: $error");
+          setState(() {
+            isBannerAdLoaded = false;
+          });
+        },
+      ),
+    );
+    bannerAd!.load();
+  }
 
   @override
   void initState() {
@@ -35,16 +70,40 @@ class _InstructionScreensState extends State<InstructionScreens>
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     _fadeController.forward();
-
+    if (RemoteConfigService().banner_ads_for_IOS ||
+        RemoteConfigService().banner_ads_for_android) {
+      // _loadBannerAd();
+      // _loadBottomBannerAd();
+    } else {}
     // Initialize empty sets for each screen
     for (int i = 0; i < instructionController.screens.length; i++) {
       _selectedOptions[i] = {};
     }
   }
 
+  bool _isAdInitialized = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_isAdInitialized) {
+      if (RemoteConfigService().banner_ads_for_IOS ||
+          RemoteConfigService().banner_ads_for_android) {
+        if (!Get.find<ProScreenController>().isUserPro.value) {
+          _loadBannerAd();
+          _loadBottomBannerAd();
+
+          _isAdInitialized = true;
+        }
+      }
+    }
+  }
+
   @override
   void dispose() {
     _fadeController.dispose();
+    AdManager.disposeBanner(bannerAd);
+    AdManager.disposeBanner(bottomBannerAd);
     super.dispose();
   }
 
@@ -153,15 +212,29 @@ class _InstructionScreensState extends State<InstructionScreens>
                 opacity: _fadeAnimation,
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: Column(
                       // crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
-                        _currentIndex == 2
+                        SizedBox(height: SizeConfig.h(20)),
+                        _currentIndex == 0
                             ? Column(
                                 children: [
-                                  SizedBox(height: SizeConfig.h(70)),
+                                  isBannerAdLoaded
+                                      ? SizedBox.shrink()
+                                      : SizedBox(height: SizeConfig.h(70)),
+                                  isBannerAdLoaded
+                                      ? SizedBox(
+                                          width: bannerAd!.size.width
+                                              .toDouble(),
+                                          height: bannerAd!.size.height
+                                              .toDouble(),
+                                          child: AdWidget(ad: bannerAd!),
+                                        )
+                                      : SizedBox(),
+                                  isBannerAdLoaded
+                                      ? SizedBox(height: SizeConfig.h(20))
+                                      : SizedBox.shrink(),
                                   Center(
                                     child: Text(
                                       'Identify Your Plants & mushrooms',
@@ -194,10 +267,24 @@ class _InstructionScreensState extends State<InstructionScreens>
                                   ),
                                 ],
                               )
-                            : _currentIndex == 4
+                            : _currentIndex == 1
                             ? Column(
                                 children: [
-                                  SizedBox(height: SizeConfig.h(70)),
+                                  isBannerAdLoaded
+                                      ? SizedBox.shrink()
+                                      : SizedBox(height: SizeConfig.h(70)),
+                                  isBannerAdLoaded
+                                      ? SizedBox(
+                                          width: bannerAd!.size.width
+                                              .toDouble(),
+                                          height: bannerAd!.size.height
+                                              .toDouble(),
+                                          child: AdWidget(ad: bannerAd!),
+                                        )
+                                      : SizedBox(),
+                                  isBannerAdLoaded
+                                      ? SizedBox(height: SizeConfig.h(20))
+                                      : SizedBox.shrink(),
                                   Center(
                                     child: Text(
                                       'Our plants deserve better care we help you give it.',
@@ -231,14 +318,19 @@ class _InstructionScreensState extends State<InstructionScreens>
                                   ),
                                 ],
                               )
-                            : Text(
-                                instructionController
-                                    .screens[_currentIndex]
-                                    .title,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.themeColor,
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                child: Text(
+                                  instructionController
+                                      .screens[_currentIndex]
+                                      .title,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.themeColor,
+                                  ),
                                 ),
                               ),
 
@@ -248,31 +340,36 @@ class _InstructionScreensState extends State<InstructionScreens>
                             .screens[_currentIndex]
                             .options
                             .isNotEmpty)
-                          _currentIndex == 2 || _currentIndex == 4
+                          _currentIndex == 0 || _currentIndex == 1
                               ? Column(children: [])
-                              : Column(
-                                  children: List.generate(
-                                    instructionController
-                                        .screens[_currentIndex]
-                                        .options
-                                        .length,
-                                    (index) => Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 12,
-                                      ),
-                                      child: OptionButton(
-                                        icons: instructionController
-                                            .screens[_currentIndex]
-                                            .icons[index],
-                                        text: instructionController
-                                            .screens[_currentIndex]
-                                            .options[index],
-                                        isSelected:
-                                            _selectedOptions[_currentIndex]!
-                                                .contains(index),
-                                        onTap: () {
-                                          _toggleOption(index);
-                                        },
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      instructionController
+                                          .screens[_currentIndex]
+                                          .options
+                                          .length,
+                                      (index) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 12,
+                                        ),
+                                        child: OptionButton(
+                                          icons: instructionController
+                                              .screens[_currentIndex]
+                                              .icons[index],
+                                          text: instructionController
+                                              .screens[_currentIndex]
+                                              .options[index],
+                                          isSelected:
+                                              _selectedOptions[_currentIndex]!
+                                                  .contains(index),
+                                          onTap: () {
+                                            _toggleOption(index);
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -285,35 +382,84 @@ class _InstructionScreensState extends State<InstructionScreens>
             ),
             // Continue Button
             Padding(
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _nextScreen,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.themeColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _nextScreen,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.themeColor,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          _currentIndex ==
+                                  instructionController.screens.length - 1
+                              ? 'Done'
+                              : 'Continue',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  child: Text(
-                    _currentIndex == instructionController.screens.length - 1
-                        ? 'Done'
-                        : 'Continue',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                  SizedBox(height: 10),
+                  if (_currentIndex == 2 ||
+                      _currentIndex == 3 ||
+                      _currentIndex == 4 ||
+                      _currentIndex == 5)
+                    inbannerForBottom
+                        ? SizedBox(
+                            width: bottomBannerAd!.size.width.toDouble(),
+                            height: bottomBannerAd!.size.height.toDouble(),
+                            child: AdWidget(ad: bottomBannerAd!),
+                          )
+                        : SizedBox.shrink(),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  BannerAd? bottomBannerAd;
+  void _loadBottomBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+    bottomBannerAd = BannerAd(
+      adUnitId: AdIds.bannerAdIdId,
+      size: size ?? AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          debugPrint("✅ Banner Loaded");
+          setState(() {
+            inbannerForBottom = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint("❌ Banner Failed: $error");
+          setState(() {
+            inbannerForBottom = false;
+          });
+        },
+      ),
+    );
+    bottomBannerAd!.load();
   }
 }
 

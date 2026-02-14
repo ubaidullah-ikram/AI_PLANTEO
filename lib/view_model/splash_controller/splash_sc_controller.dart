@@ -23,29 +23,62 @@ class SplashController extends GetxController {
     await prefs.setInt(second_app_opened, count);
   }
 
-  void loadSplashInterAd(BuildContext context) async {
-    log('fn starts');
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+  }
 
-    // 2 sec splash delay
+  void _showAppOpenAd() {
+    AdManager.showAppOpenAd(
+      onDismiss: () async {
+        log('🚪 AppOpenAd dismissed → next screen');
+        // _goNext();
+      },
+    );
+  }
+
+  void loadSplashAppOpenAd(BuildContext context) async {
+    log('fn starts');
+    _showLoadingDialog(context); // ✅ show loader
+
     try {
       if (!Get.find<ProScreenController>().isUserPro.value) {
-        if (Platform.isIOS) {
-          log('its ios inter ad check');
-          iosInterAd(context);
+        bool isAdEnabled = Platform.isIOS
+            ? RemoteConfigService().app_open_Ads_for_IOS
+            : RemoteConfigService().app_open_Ads_for_android;
+
+        if (isAdEnabled) {
+          AdManager.loadAppOpenAd(
+            onAdLoaded: () {
+              if (_navigated) {
+                AdManager.appOpenAd?.dispose();
+                return;
+              }
+
+              log('✅ AppOpenAd Loaded in Splash');
+              Future.delayed(Duration(milliseconds: 400), () {
+                _showAppOpenAd();
+              });
+            },
+            onAdFailedToLoad: () {
+              log('❌ AppOpenAd failed');
+              _goNext();
+            },
+          );
         } else {
-          log('its android inter ad check');
-          androidInterAd(context);
+          log('🚫 splash ad disabled from remote config');
+          _goNext();
         }
       } else {
-        log('===>  User is Pro isko jany do');
+        log('===> User is Pro → skip ad');
         _goNext();
       }
     } catch (e) {
-      log('❌ Exception in loadSplashInterAd: $e');
+      log('❌ Exception in loadSplashAppOpenAd: $e');
       _goNext();
     }
 
-    // ✅ Hard timeout
     _splashTimer = Timer(const Duration(seconds: 3), () {
       if (!_navigated) {
         log('⏰ Timeout reached → navigating');
@@ -54,92 +87,23 @@ class SplashController extends GetxController {
     });
   }
 
-  androidInterAd(BuildContext context) {
-    log(
-      'android inter ad ${RemoteConfigService().intersitial_ads_for_android} from config',
-    );
-    if (RemoteConfigService().intersitial_ads_for_android) {
-      AdManager.loadInterstitialAd(
-        onAdLoaded: () {
-          if (_navigated) {
-            // agar already navigate ho gaya to ad ignore kar do
-            AdManager.disposeInterstitial();
-            return;
-          }
-          log('✅ Interstitial Loaded in Splash');
-          _showAd();
-        },
-        onAdFailedToLoad: (error) {
-          log('❌ Interstitial failed to load: $error');
-          _goNext();
-        },
-        context: context,
-      );
-    } else {
-      log('splash disable from remote config');
-      _goNext();
-    }
-  }
-
-  iosInterAd(BuildContext context) {
-    log(
-      'ios inter ad ${RemoteConfigService().intersitial_ads_for_ios} from config',
-    );
-    if (RemoteConfigService().intersitial_ads_for_ios) {
-      AdManager.loadInterstitialAd(
-        onAdLoaded: () {
-          if (_navigated) {
-            // agar already navigate ho gaya to ad ignore kar do
-            AdManager.disposeInterstitial();
-            return;
-          }
-          log('✅ Interstitial Loaded in Splash');
-          _showAd();
-        },
-        onAdFailedToLoad: (error) {
-          log('❌ Interstitial failed to load: $error');
-          _goNext();
-        },
-        context: context,
-      );
-    } else {
-      log('splash disable from remote config');
-      _goNext();
-    }
-  }
-
-  void _showAd() {
-    AdManager.showInterstitialAd(
-      onDismiss: () async {
-        log('🚪 Ad dismissed → next screen');
-
-        _goNext();
-      },
-      onAddFailedToShow: () async {
-        log('❌ Failed to show Ad → next screen');
-
-        _goNext();
-      },
-    );
-  }
-
-  // final config = RemoteConfigService().freeQueryConfig;
-
-  // String kFreeQueriesKey = 'remaining_queries';
-  // int kInitialFreeQueries = RemoteConfigService().freeQueryConfig.freeLimit;
-  // int kInitialFreeQueries = RemoteConfigService().freeUserCredits;
-
   bool islogin = false;
   void _goNext() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
+    _hideLoadingDialog();
+    log('just before _navigated');
     if (_navigated) return;
     _navigated = true;
+    log('just after _navigated');
     await trackCompletedResult();
     _splashTimer?.cancel();
-    AdManager.disposeInterstitial(); // ✅ ensure ad cancel/dispose
+    AdManager.appOpenAd?.dispose(); // ✅ ensure ad cancel/dispose
     // ✅ Give 10 free queries first time
     if (!Get.find<ProScreenController>().isUserPro.value) {
-      QueryManager.initialize();
+      log('the query called');
+      QueryManager.downgradeToFreeIfNeeded();
+    } else {
+      log('message not');
     }
 
     bool islogin = sp.getBool('isInitialized') ?? false;
@@ -154,7 +118,38 @@ class SplashController extends GetxController {
   @override
   void onClose() {
     _splashTimer?.cancel();
-    AdManager.disposeInterstitial(); // ✅ cleanup on destroy
+    AdManager.appOpenAd?.dispose(); // ✅ cleanup on destroy
+
     super.onClose();
+  }
+}
+
+void _showLoadingDialog(BuildContext context) {
+  Get.dialog(
+    WillPopScope(
+      onWillPop: () async => false,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Row(
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Text(
+                "Please wait...\nAd is loading",
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    barrierDismissible: false,
+  );
+}
+
+void _hideLoadingDialog() {
+  if (Get.isDialogOpen ?? false) {
+    Get.back();
   }
 }

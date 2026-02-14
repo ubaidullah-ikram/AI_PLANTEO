@@ -296,29 +296,29 @@ class AdIds {
   static String bannerAdIdId = Platform.isAndroid
       ? kDebugMode
             ? "ca-app-pub-3940256099942544/9214589741"
-            : "ca-app-pub-9804021071767799/3488194497"
+            : "ca-app-pub-9804021071767799/8769309248"
       : kDebugMode
       ? "ca-app-pub-3940256099942544/2435281174"
-      : "ca-app-pub-9804021071767799/7920240008";
+      : "ca-app-pub-9804021071767799/6164151617";
   static String interstitialAdId = Platform.isAndroid
       ? kDebugMode
             ? "ca-app-pub-3940256099942544/1033173712"
-            : "ca-app-pub-9804021071767799/1215230855"
+            : "ca-app-pub-9804021071767799/6143145908"
       : kDebugMode
       ? "ca-app-pub-3940256099942544/4411468910"
-      : "ca-app-pub-9804021071767799/4912956801";
+      : "ca-app-pub-9804021071767799/4851069945";
   static String appOpenApAdId = Platform.isAndroid
       ? kDebugMode
             ? "ca-app-pub-3940256099942544/9257395921"
-            : "ca-app-pub-9804021071767799/9917871477"
+            : "ca-app-pub-9804021071767799/5048614136"
       : kDebugMode
       ? "ca-app-pub-3940256099942544/5575463023"
-      : "ca-app-pub-9804021071767799/3599875135";
+      : "ca-app-pub-9804021071767799/3537988276";
   static String nativeAdId = Platform.isAndroid
       ? kDebugMode
             ? "ca-app-pub-3940256099942544/2247696110"
-            : "ca-app-pub-9804021071767799/8359223708"
+            : "ca-app-pub-9804021071767799/2614022488"
       : kDebugMode
       ? "ca-app-pub-3940256099942544/3986624511"
-      : "ca-app-pub-9804021071767799/4825326898";
+      : "ca-app-pub-9804021071767799/7353110205";
 }

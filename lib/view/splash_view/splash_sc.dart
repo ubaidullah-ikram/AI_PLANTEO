@@ -5,6 +5,7 @@ import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/res/responsive_config/responsive_config.dart';
 import 'package:plantify/view/home_screen/home_screen.dart';
 import 'package:plantify/view/instruction_screen/onb_instruction_screen.dart';
+import 'package:plantify/view_model/pro_screen_controller/pro_screen_controller.dart';
 import 'package:plantify/view_model/splash_controller/splash_sc_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,8 +27,21 @@ class _SplashScreenState extends State<SplashScreen> {
   //     Get.to(() => InstructionScreens());
   //   }
   // }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   splashController.loadSplashInterAd(context);
+  // }
 
   var splashController = Get.put(SplashController());
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // splashController.loadSplashAppOpenAd(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               SizedBox(height: 10),
               Text(
-                'Your Plants Deserve Better Planteo Helps Them Thrive Every Day.',
+                'Your plants deserve better.\nPlanteo helps them thrive, every day. 🌿',
                 style: TextStyle(
                   fontSize: 15,
                   color: Color(0xff242424),
@@ -73,7 +87,9 @@ class _SplashScreenState extends State<SplashScreen> {
                 onTap: () {
                   // Get.to(() => HomeScreen());
                   // checkUser();
-                  splashController.loadSplashInterAd(context);
+
+                  // splashController.goNext();
+                  splashController.loadSplashAppOpenAd(context);
                 },
                 child: Container(
                   height: 54,
@@ -95,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 40),
             ],
           ),
         ),

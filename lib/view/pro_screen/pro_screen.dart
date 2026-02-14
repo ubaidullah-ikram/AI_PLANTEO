@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:plantify/constant/app_icons.dart';
 import 'package:plantify/constant/app_images.dart';
 import 'package:plantify/view_model/pro_screen_controller/pro_screen_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlanteoProScreen extends StatefulWidget {
   const PlanteoProScreen({Key? key}) : super(key: key);
@@ -55,7 +57,7 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                 children: [
                   Container(
                     height: 230,
-
+                    decoration: BoxDecoration(color: Color(0xffF7F7F7)),
                     child: Center(
                       child: Image.asset(
                         AppIcons.proScreengif,
@@ -87,47 +89,47 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                 child: Column(
                   children: [
                     // Title with Crown Icons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          AppIcons.small_pro,
-                          height: 15,
-                          // fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Text('Gif placeholder'),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'PLANTEO PRO',
-                          style: TextStyle(
-                            fontSize: isMobile ? 28 : 32,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2D7A6B),
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Image.asset(
-                          AppIcons.small_pro,
-                          height: 15,
-                          // fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Text('Gif placeholder'),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: isMobile ? 8 : 12),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Image.asset(
+                    //       AppIcons.small_pro,
+                    //       height: 15,
+                    //       // fit: BoxFit.cover,
+                    //       errorBuilder: (context, error, stackTrace) =>
+                    //           Text('Gif placeholder'),
+                    //     ),
+                    //     SizedBox(width: 10),
+                    //     Text(
+                    //       'PLANTEO PRO',
+                    //       style: TextStyle(
+                    //         fontSize: isMobile ? 28 : 32,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: const Color(0xFF2D7A6B),
+                    //         letterSpacing: 0.5,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 10),
+                    //     Image.asset(
+                    //       AppIcons.small_pro,
+                    //       height: 15,
+                    //       // fit: BoxFit.cover,
+                    //       errorBuilder: (context, error, stackTrace) =>
+                    //           Text('Gif placeholder'),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: isMobile ? 8 : 12),
 
                     // Subtitle
                     Text(
-                      'Help your plants grow healthier with\nPlanteo PRO',
+                      'Help your plants grow healthier with Planteo PRO',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: isMobile ? 12 : 16,
+                        fontSize: isMobile ? 20 : 16,
                         color: Colors.grey[600],
                         height: 1.5,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -163,31 +165,37 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                       ],
                     ),
 
-                    SizedBox(height: isMobile ? 24 : 32),
+                    SizedBox(height: isMobile ? 15 : 32),
                     ListView.builder(
                       itemCount: procontroller.products.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final product = procontroller.products[index];
-
+                        final iosTitle = product.title == 'Weekly Plan'
+                            ? 'Weekly'
+                            : 'Yearly';
+                        final androidTitle =
+                            product.title == 'Weekly Plan (AI Planteo)'
+                            ? 'Weekly'
+                            : 'Yearly';
+                        // log(
+                        //   'Product Title: ${product.title}, iOS Title: $iosTitle, Android Title: $androidTitle',
+                        // );
                         return Stack(
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: _buildPricingPlan(
-                                product.title == 'Weekly Plan'
-                                    ? 'Weekly'
-                                    : 'Yearly',
+                                Platform.isAndroid ? androidTitle : iosTitle,
                                 product.priceString,
-                                index == 1
-                                    ? '3 Days Free Trial'
-                                    : 'Billed Weekly',
+                                index == 1 ? '' : '',
                                 selectedIndex == index, // ✅ selection yahan
                                 isMobile,
                                 () {
                                   setState(() {
                                     selectedIndex = index;
+                                    log(product.title);
                                   });
                                 },
                               ),
@@ -260,9 +268,7 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                           // elevation: 4,
                         ),
                         child: Text(
-                          selectedIndex == 0
-                              ? "Continue"
-                              : 'Get Free Trail Now',
+                          selectedIndex == 0 ? "Continue" : 'Continue',
                           style: TextStyle(
                             fontSize: isMobile ? 16 : 18,
                             fontWeight: FontWeight.bold,
@@ -273,42 +279,51 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                       ),
                     ),
 
-                    SizedBox(height: isMobile ? 12 : 16),
+                    // SizedBox(height: isMobile ? 12 : 16),
 
                     // No Payment Info
-                    selectedIndex == 0
-                        ? SizedBox.shrink()
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                size: isMobile ? 18 : 20,
-                                color: Colors.black,
-                              ),
-                              SizedBox(width: isMobile ? 8 : 10),
-                              Text(
-                                'No Payment Now',
-                                style: TextStyle(
-                                  fontSize: isMobile ? 14 : 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-
+                    // selectedIndex == 0
+                    //     ? SizedBox.shrink()
+                    //     : Row(
+                    //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         children: [
+                    //           Icon(
+                    //             Icons.check_circle,
+                    //             size: isMobile ? 18 : 20,
+                    //             color: Colors.black,
+                    //           ),
+                    //           SizedBox(width: isMobile ? 8 : 10),
+                    //           Text(
+                    //             'No Payment Now',
+                    //             style: TextStyle(
+                    //               fontSize: isMobile ? 14 : 16,
+                    //               fontWeight: FontWeight.w600,
+                    //               color: Colors.black,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
                     SizedBox(height: isMobile ? 6 : 20),
 
                     // Footer Links
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildFooterLink('Privacy Policy', isMobile),
+                        _buildFooterLink('Privacy Policy', isMobile, () {
+                          _launchURL(
+                            'https://pioneerdigital.tech/privacy-policy.html',
+                          );
+                        }),
                         _buildDividerVertical(),
-                        _buildFooterLink('Terms & Conditions', isMobile),
+                        _buildFooterLink('Terms & Conditions', isMobile, () {
+                          _launchURL(
+                            'https://pioneerdigital.tech/terms-and-conditions.html',
+                          );
+                        }),
                         _buildDividerVertical(),
-                        _buildFooterLink('Restore Purchase', isMobile),
+                        _buildFooterLink('Restore Purchase', isMobile, () {
+                          procontroller.restorePurchase(context);
+                        }),
                       ],
                     ),
                   ],
@@ -332,7 +347,7 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: isMobile ? 13 : 15,
+            fontSize: isMobile ? 18 : 15,
             color: Color(0xff216E49),
             fontWeight: FontWeight.w500,
           ),
@@ -376,14 +391,14 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
                 ]
               : null,
         ),
-        padding: EdgeInsets.all(isMobile ? 16 : 20),
+        padding: EdgeInsets.all(isMobile ? 20 : 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: isMobile ? 14 : 18,
+                fontSize: isMobile ? 16 : 18,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF359767),
               ),
@@ -391,14 +406,22 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(price),
                 Text(
-                  subtitle,
+                  price,
                   style: TextStyle(
-                    fontSize: isMobile ? 11 : 14,
-                    color: const Color(0xFF359767),
+                    fontSize: isMobile ? 17 : 14,
+                    // color: const Color(0xFF359767),
                   ),
                 ),
+                subtitle.toString().isEmpty
+                    ? SizedBox.shrink()
+                    : Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: isMobile ? 11 : 14,
+                          color: const Color(0xFF359767),
+                        ),
+                      ),
               ],
             ),
           ],
@@ -407,13 +430,9 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
     );
   }
 
-  Widget _buildFooterLink(String text, bool isMobile) {
+  Widget _buildFooterLink(String text, bool isMobile, Function()? onTap) {
     return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(text)));
-      },
+      onTap: onTap,
       child: Text(
         text,
         style: TextStyle(
@@ -423,5 +442,10 @@ class _PlanteoProScreenState extends State<PlanteoProScreen>
         ),
       ),
     );
+  }
+
+  Future<void> _launchURL(String urlN) async {
+    final Uri url = Uri.parse(urlN);
+    await launchUrl(url);
   }
 }

@@ -1,4 +1,5 @@
 // ============= REMINDER MODEL =============
+import 'dart:convert';
 import 'dart:typed_data';
 
 class ReminderModel {
@@ -34,7 +35,7 @@ class ReminderModel {
     return {
       'id': id,
       'plantName': plantName,
-      'image': image,
+      'image': base64Encode(image),
       'reminderType': reminderType,
       'reminderIcon': reminderIcon,
       'hour': hour,
@@ -51,7 +52,7 @@ class ReminderModel {
     return ReminderModel(
       id: json['id'] as int,
       plantName: json['plantName'] as String,
-      image: json['image'] as Uint8List,
+      image: base64Decode(json['image']), // ✅ fix
       reminderType: json['reminderType'] as String,
       reminderIcon: json['reminderIcon'] as String,
       hour: json['hour'] as int,

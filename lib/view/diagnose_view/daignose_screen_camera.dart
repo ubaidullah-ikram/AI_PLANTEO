@@ -326,97 +326,121 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              isTabSelected = 1;
-                                              cameraCtrl.capturedImages.clear();
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              decoration: isTabSelected == 1
-                                                  ? BoxDecoration(
-                                                      color: Colors.white,
-                                                      border: Border.all(
-                                                        color: Color(
-                                                          0xffE0E0E0,
-                                                        ),
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            50,
-                                                          ),
-                                                    )
-                                                  : null,
-                                              width: 100,
-                                              height: 30,
-                                              child: Center(
-                                                child: Text(
-                                                  'Identify',
-                                                  style: TextStyle(
-                                                    color: Color(0xff797979),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                          if (isTabSelected == 1)
+                                            buildTab('Diagnose', 0),
+                                          if (isTabSelected == 0)
+                                            buildTab('Identify', 1),
+
                                           SizedBox(width: 10),
-                                          GestureDetector(
-                                            onTap: () {
-                                              isTabSelected = 0;
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              decoration: isTabSelected == 0
-                                                  ? BoxDecoration(
-                                                      color: Colors.white,
-                                                      border: Border.all(
-                                                        color: Color(
-                                                          0xffE0E0E0,
-                                                        ),
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            50,
-                                                          ),
-                                                    )
-                                                  : null,
-                                              width: 100,
-                                              height: 30,
-                                              child: Center(
-                                                child: Text(
-                                                  'Diagnose',
-                                                  style: TextStyle(
-                                                    color: Color(0xff797979),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+
+                                          buildTab(
+                                            isTabSelected == 1
+                                                ? 'Identify'
+                                                : 'Diagnose',
+                                            isTabSelected,
                                           ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            width: 100,
-                                            height: 30,
-                                            child: Center(
-                                              child: Text(
-                                                'Identify',
-                                                style: TextStyle(
-                                                  color: Colors.transparent,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+
+                                          SizedBox(width: 10),
+
+                                          Container(width: 100, height: 30),
                                         ],
                                       ),
+                                //  Row(
+                                //     mainAxisAlignment:
+                                //         MainAxisAlignment.center,
+                                //     children: [
+                                //       GestureDetector(
+                                //         onTap: () {
+                                //           isTabSelected = 1;
+                                //           cameraCtrl.capturedImages.clear();
+                                //           setState(() {});
+                                //         },
+                                //         child: Container(
+                                //           decoration: isTabSelected == 1
+                                //               ? BoxDecoration(
+                                //                   color: Colors.white,
+                                //                   border: Border.all(
+                                //                     color: Color(
+                                //                       0xffE0E0E0,
+                                //                     ),
+                                //                   ),
+                                //                   borderRadius:
+                                //                       BorderRadius.circular(
+                                //                         50,
+                                //                       ),
+                                //                 )
+                                //               : null,
+                                //           width: 100,
+                                //           height: 30,
+                                //           child: Center(
+                                //             child: Text(
+                                //               'Identify',
+                                //               style: TextStyle(
+                                //                 color: Color(0xff797979),
+                                //                 fontSize: 14,
+                                //                 fontWeight: FontWeight.w600,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       ),
+                                //       SizedBox(width: 10),
+                                //       GestureDetector(
+                                //         onTap: () {
+                                //           isTabSelected = 0;
+                                //           setState(() {});
+                                //         },
+                                //         child: Container(
+                                //           decoration: isTabSelected == 0
+                                //               ? BoxDecoration(
+                                //                   color: Colors.white,
+                                //                   border: Border.all(
+                                //                     color: Color(
+                                //                       0xffE0E0E0,
+                                //                     ),
+                                //                   ),
+                                //                   borderRadius:
+                                //                       BorderRadius.circular(
+                                //                         50,
+                                //                       ),
+                                //                 )
+                                //               : null,
+                                //           width: 100,
+                                //           height: 30,
+                                //           child: Center(
+                                //             child: Text(
+                                //               'Diagnose',
+                                //               style: TextStyle(
+                                //                 color: Color(0xff797979),
+                                //                 fontSize: 14,
+                                //                 fontWeight: FontWeight.w600,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       ),
+                                //       Container(
+                                //         decoration: BoxDecoration(
+                                //           color: Colors.transparent,
+                                //           borderRadius:
+                                //               BorderRadius.circular(50),
+                                //         ),
+                                //         width: 100,
+                                //         height: 30,
+                                //         child: Center(
+                                //           child: Text(
+                                //             'Identify',
+                                //             style: TextStyle(
+                                //               color: Colors.transparent,
+                                //               fontSize: 14,
+                                //               fontWeight: FontWeight.w600,
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+
                                 // Capture button
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -540,6 +564,9 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
                                         ),
                                       ),
                                       GestureDetector(
+                                        onTap: () {
+                                          cameraCtrl.switchCamera();
+                                        },
                                         child: Container(
                                           width: 42,
                                           height: 42,
@@ -566,6 +593,41 @@ class _DiagnosePlantScreenState extends State<DiagnosePlantScreen>
             ],
           );
         }),
+      ),
+    );
+  }
+
+  Widget buildTab(String title, int index) {
+    bool isSelected = isTabSelected == index;
+
+    return GestureDetector(
+      onTap: () {
+        isTabSelected = index;
+        if (index == 1) {
+          cameraCtrl.capturedImages.clear();
+        }
+        setState(() {});
+      },
+      child: Container(
+        decoration: isSelected
+            ? BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Color(0xffE0E0E0)),
+                borderRadius: BorderRadius.circular(50),
+              )
+            : null,
+        width: 100,
+        height: 30,
+        child: Center(
+          child: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Color(0xff797979) : Color(0xff797979),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }

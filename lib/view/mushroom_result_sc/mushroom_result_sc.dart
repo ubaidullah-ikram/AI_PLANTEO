@@ -262,15 +262,15 @@ class _MushroomIdentificationResultScreenState
                         Get.snackbar(
                           'Saved',
                           'Mushroom added to My Garden 🍄',
-                          snackPosition: SnackPosition.BOTTOM,
+                          // snackPosition: SnackPosition.BOTTOM,
                         );
                       },
                       child: Container(
                         height: 56,
                         margin: EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          color: AppColors.themeColor,
-                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.themeColor),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
                           child: Text(
@@ -279,7 +279,8 @@ class _MushroomIdentificationResultScreenState
                               fontFamily: AppFonts.sfPro,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: AppColors.themeColor,
+                              // color: Colors.white,
                             ),
                           ),
                         ),
